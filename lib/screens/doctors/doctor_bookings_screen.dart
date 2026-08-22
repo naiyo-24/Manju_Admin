@@ -299,8 +299,34 @@ class DoctorBookingsScreen extends ConsumerWidget {
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                         ),
                         onPressed: () {
-                          ref.read(doctorProvider.notifier).deleteDoctor(doctor.id);
-                          Navigator.pop(context);
+                          showDialog(
+                            context: context,
+                            builder: (ctx) => AlertDialog(
+                              title: const Text('Delete Doctor?', style: TextStyle(color: AppTheme.primaryGreen)),
+                              content: const Text('Are you sure you want to delete this doctor? This action cannot be undone.', style: TextStyle(color: AppTheme.textPrimary)),
+                              backgroundColor: AppTheme.backgroundColor,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(ctx),
+                                  child: const Text('No', style: TextStyle(color: AppTheme.textSecondary, fontWeight: FontWeight.bold)),
+                                ),
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppTheme.pricePink,
+                                    foregroundColor: Colors.white,
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                  ),
+                                  onPressed: () {
+                                    ref.read(doctorProvider.notifier).deleteDoctor(doctor.id);
+                                    Navigator.pop(ctx); // close confirmation
+                                    Navigator.pop(context); // close details
+                                  },
+                                  child: const Text('Yes, Delete', style: TextStyle(fontWeight: FontWeight.bold)),
+                                ),
+                              ],
+                            ),
+                          );
                         },
                         child: const Text('Delete', style: TextStyle(fontWeight: FontWeight.bold)),
                       ),
@@ -444,15 +470,6 @@ class DoctorBookingsScreen extends ConsumerWidget {
                           Icon(Icons.people_outline, size: 80, color: AppTheme.textSecondary.withValues(alpha: 0.3)),
                           const SizedBox(height: 16),
                           const Text('No doctors registered yet.', style: TextStyle(color: AppTheme.textSecondary, fontSize: 16)),
-                          const SizedBox(height: 8),
-                          ElevatedButton(
-                            onPressed: () => _showAddDoctorDialog(context, ref),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppTheme.accentGreen,
-                              foregroundColor: Colors.white,
-                            ),
-                            child: const Text('Add First Doctor'),
-                          ),
                         ],
                       ),
                     );
