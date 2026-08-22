@@ -63,7 +63,7 @@ class AppointmentsScreen extends ConsumerWidget {
                   child: AdminStatCard(
                     title: 'Completed', 
                     value: apptsAsync.maybeWhen(
-                      data: (appts) => appts.where((a) => a.status == 'COMPLETED').length.toString(),
+                      data: (appts) => appts.where((a) => a.status.toUpperCase() == 'COMPLETED').length.toString(),
                       orElse: () => '...',
                     ), 
                     icon: Icons.check_circle, 
@@ -128,7 +128,7 @@ class AppointmentsScreen extends ConsumerWidget {
                               trailing: Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                 decoration: BoxDecoration(
-                                  color: appt.status == 'COMPLETED' 
+                                  color: appt.status.toUpperCase() == 'COMPLETED' 
                                       ? AppTheme.accentGreen.withValues(alpha: 0.2) 
                                       : AppTheme.pricePink.withValues(alpha: 0.2),
                                   borderRadius: BorderRadius.circular(12),
@@ -136,7 +136,7 @@ class AppointmentsScreen extends ConsumerWidget {
                                 child: Text(
                                   appt.status.toUpperCase(),
                                   style: TextStyle(
-                                    color: appt.status == 'COMPLETED' ? AppTheme.primaryGreen : AppTheme.pricePink,
+                                    color: appt.status.toUpperCase() == 'COMPLETED' ? AppTheme.primaryGreen : AppTheme.pricePink,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),

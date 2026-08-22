@@ -6,7 +6,7 @@ import '../../../models/appointment.dart';
 import '../../../models/doctor.dart';
 import '../../../providers/appointment_provider.dart';
 
-class AppointmentDetailsDialog extends ConsumerWidget {
+class AppointmentDetailsDialog extends ConsumerStatefulWidget {
   final Appointment appt;
   final List<Doctor> doctors;
 
@@ -15,6 +15,19 @@ class AppointmentDetailsDialog extends ConsumerWidget {
     required this.appt,
     required this.doctors,
   });
+
+  @override
+  ConsumerState<AppointmentDetailsDialog> createState() => _AppointmentDetailsDialogState();
+}
+
+class _AppointmentDetailsDialogState extends ConsumerState<AppointmentDetailsDialog> {
+  late String selectedStatus;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedStatus = widget.appt.status.toUpperCase();
+  }
 
   Widget _buildInfoRow(IconData icon, String label, String value) {
     return Row(
@@ -30,19 +43,19 @@ class AppointmentDetailsDialog extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final doctor = doctors.where((d) => d.id == appt.doctorId).firstOrNull;
-    final patientName = (appt.formDetails?['patient_name']?.toString().isNotEmpty ?? false) 
-        ? appt.formDetails!['patient_name']
+  Widget build(BuildContext context) {
+    final doctor = widget.doctors.where((d) => d.id == widget.appt.doctorId).firstOrNull;
+    final patientName = (widget.appt.formDetails?['patient_name']?.toString().isNotEmpty ?? false) 
+        ? widget.appt.formDetails!['patient_name']
         : 'Not Specified';
-    final age = (appt.formDetails?['age']?.toString().isNotEmpty ?? false)
-        ? appt.formDetails!['age']
+    final age = (widget.appt.formDetails?['age']?.toString().isNotEmpty ?? false)
+        ? widget.appt.formDetails!['age']
         : 'N/A';
-    final gender = (appt.formDetails?['gender']?.toString().isNotEmpty ?? false)
-        ? appt.formDetails!['gender']
+    final gender = (widget.appt.formDetails?['gender']?.toString().isNotEmpty ?? false)
+        ? widget.appt.formDetails!['gender']
         : 'N/A';
-    final notes = (appt.formDetails?['notes']?.toString().isNotEmpty ?? false)
-        ? appt.formDetails!['notes']
+    final notes = (widget.appt.formDetails?['notes']?.toString().isNotEmpty ?? false)
+        ? widget.appt.formDetails!['notes']
         : 'None';
     
     return Dialog(
@@ -60,9 +73,55 @@ class AppointmentDetailsDialog extends ConsumerWidget {
             
             _buildInfoRow(Icons.person, 'Doctor', doctor != null ? 'Dr. ${doctor.name}' : 'Not Specified'),
             const SizedBox(height: 16),
-            _buildInfoRow(Icons.calendar_today, 'Date', DateFormat('MMM dd, yyyy').format(appt.preferredDate)),
+            _buildInfoRow(Icons.calendar_today, 'Date', DateFormat('MMM dd, yyyy').format(widget.appt.preferredDate)),
             const SizedBox(height: 16),
-            _buildInfoRow(Icons.info_outline, 'Status', appt.status.toUpperCase()),
+            
+            // Status Dropdown
+            Row(
+              children: [
+                const Icon(Icons.info_outline, color: AppTheme.accentGreen, size: 20),
+                const SizedBox(width: 12),
+                const Text('Status:', style: TextStyle(color: AppTheme.textSecondary, fontSize: 14)),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: AppTheme.accentGreen.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: AppTheme.accentGreen.withValues(alpha: 0.3)),
+                    ),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                        value: selectedStatus,
+                        isExpanded: true,
+                        icon: const Icon(Icons.arrow_drop_down, color: AppTheme.primaryGreen),
+                        items: ['PENDING', 'CONFIRMED', 'COMPLETED']
+                            .map((s) => DropdownMenuItem(
+                                  value: s,
+                                  child: Text(
+                                    s,
+                                    style: const TextStyle(fontWeight: FontWeight.bold, color: AppTheme.primaryGreen),
+                                  ),
+                                ))
+                            .toList(),
+                        onChanged: (val) {
+                          if (val != null) {
+                            setState(() {
+                              selectedStatus = val;
+                            });
+                            ref.read(appointmentProvider.notifier).updateAppointment(
+                                  widget.appt.copyWith(status: val),
+                                );
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            
             const SizedBox(height: 24),
             
             const Text('Patient Info', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: AppTheme.primaryGreen)),
@@ -73,7 +132,7 @@ class AppointmentDetailsDialog extends ConsumerWidget {
             const SizedBox(height: 12),
             _buildInfoRow(Icons.description, 'Notes', notes),
 
-            if (appt.prescriptionFileName != null) ...[
+            if (widget.appt.prescriptionFileName != null) ...[
               const SizedBox(height: 24),
               Container(
                 padding: const EdgeInsets.all(12),
@@ -86,7 +145,7 @@ class AppointmentDetailsDialog extends ConsumerWidget {
                   children: [
                     const Icon(Icons.file_present, color: AppTheme.primaryGreen),
                     const SizedBox(width: 8),
-                    Expanded(child: Text('Attached: ${appt.prescriptionFileName}', style: const TextStyle(fontWeight: FontWeight.bold))),
+                    Expanded(child: Text('Attached: ${widget.appt.prescriptionFileName}', style: const TextStyle(fontWeight: FontWeight.bold))),
                   ],
                 ),
               )
@@ -123,7 +182,7 @@ class AppointmentDetailsDialog extends ConsumerWidget {
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                               ),
                               onPressed: () {
-                                ref.read(appointmentProvider.notifier).deleteAppointment(appt.id);
+                                ref.read(appointmentProvider.notifier).deleteAppointment(widget.appt.id);
                                 Navigator.pop(ctx);
                                 Navigator.pop(context);
                               },
