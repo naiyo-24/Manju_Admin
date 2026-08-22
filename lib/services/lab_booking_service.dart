@@ -1,7 +1,7 @@
 import '../models/lab_booking.dart';
 
 class LabBookingService {
-  final List<LabBooking> _mockBookings = [];
+  static final List<LabBooking> _mockBookings = [];
 
   Future<List<LabBooking>> getLabBookings() async {
     await Future.delayed(const Duration(seconds: 1));

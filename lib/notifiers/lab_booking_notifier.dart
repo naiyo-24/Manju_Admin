@@ -22,7 +22,7 @@ class LabBookingNotifier extends AsyncNotifier<List<LabBooking>> {
       await _service.createLabBooking(bookingToSave);
       
       if (state.hasValue) {
-        state = AsyncValue.data([...state.value!, bookingToSave]);
+        state = AsyncValue.data(await _service.getLabBookings());
       }
     } catch (e) {
       // Ignore error for mock
