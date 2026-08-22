@@ -48,6 +48,14 @@ class DashboardShell extends ConsumerWidget {
                         //   label: Text('Medicines'),
                         // ),
                         NavigationRailDestination(
+                          icon: Icon(Icons.event_available),
+                          label: Text('Appointments'),
+                        ),
+                        NavigationRailDestination(
+                          icon: Icon(Icons.science_outlined),
+                          label: Text('Lab Bookings'),
+                        ),
+                        NavigationRailDestination(
                           icon: Icon(Icons.biotech),
                           label: Text('Lab Tests'),
                         ),
@@ -91,6 +99,14 @@ class DashboardShell extends ConsumerWidget {
             //   icon: Icon(Icons.medication),
             //   label: 'Medicines',
             // ),
+            NavigationDestination(
+              icon: Icon(Icons.event_available),
+              label: 'Appointments',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.science_outlined),
+              label: 'Lab Bookings',
+            ),
             NavigationDestination(
               icon: Icon(Icons.biotech),
               label: 'Lab Tests',

@@ -7,6 +7,8 @@ import '../screens/dashboard/dashboard_screen.dart';
 import '../screens/doctors/doctor_bookings_screen.dart';
 import '../screens/medicines/medicine_delivery_screen.dart';
 import '../screens/lab_tests/lab_tests_screen.dart';
+import '../screens/appointments/appointments_screen.dart';
+import '../screens/lab_bookings/lab_bookings_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authProvider);
@@ -55,6 +57,22 @@ final routerProvider = Provider<GoRouter>((ref) {
           //     ),
           //   ],
           // ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/appointments',
+                builder: (context, state) => const AppointmentsScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/lab-bookings',
+                builder: (context, state) => const LabBookingsScreen(),
+              ),
+            ],
+          ),
           StatefulShellBranch(
             routes: [
               GoRoute(
