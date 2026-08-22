@@ -1,0 +1,57 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:uuid/uuid.dart';
+import '../models/appointment.dart';
+import '../services/appointment_service.dart';
+
+class AppointmentNotifier extends AsyncNotifier<List<Appointment>> {
+  late final AppointmentService _service;
+  final _uuid = const Uuid();
+
+  @override
+  Future<List<Appointment>> build() async {
+    _service = AppointmentService();
+    return await _service.getAppointments();
+  }
+
+  Future<void> addAppointment(Appointment newAppt) async {
+    try {
+      final apptToSave = newAppt.id.isEmpty 
+          ? newAppt.copyWith(id: _uuid.v4()) 
+          : newAppt;
+          
+      await _service.createAppointment(apptToSave);
+      
+      if (state.hasValue) {
+        state = AsyncValue.data([...state.value!, apptToSave]);
+      }
+    } catch (e) {
+      print('Error adding appointment: $e');
+    }
+  }
+
+  Future<void> updateAppointment(Appointment appt) async {
+    try {
+      await _service.updateAppointment(appt);
+      if (state.hasValue) {
+        final updatedList = state.value!.map((a) {
+          return a.id == appt.id ? appt : a;
+        }).toList();
+        state = AsyncValue.data(updatedList);
+      }
+    } catch (e) {
+      print('Error updating appointment: $e');
+    }
+  }
+
+  Future<void> deleteAppointment(String id) async {
+    try {
+      await _service.deleteAppointment(id);
+      if (state.hasValue) {
+        final updatedList = state.value!.where((a) => a.id != id).toList();
+        state = AsyncValue.data(updatedList);
+      }
+    } catch (e) {
+      print('Error deleting appointment: $e');
+    }
+  }
+}
