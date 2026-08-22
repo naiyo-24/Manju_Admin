@@ -32,7 +32,7 @@ class LabBookingsScreen extends ConsumerWidget {
           );
         },
         icon: const Icon(Icons.add),
-        label: const Text('Add Mock Booking'),
+        label: const Text('Add Booking'),
       ),
       body: Padding(
         padding: AppTheme.defaultScreenPadding,
