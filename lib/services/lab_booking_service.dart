@@ -5,7 +5,7 @@ class LabBookingService {
 
   Future<List<LabBooking>> getLabBookings() async {
     await Future.delayed(const Duration(seconds: 1));
-    return _mockBookings;
+    return List.from(_mockBookings);
   }
 
   Future<void> createLabBooking(LabBooking booking) async {
