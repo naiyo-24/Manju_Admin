@@ -264,7 +264,6 @@ class _AddAppointmentDialogState extends ConsumerState<AddAppointmentDialog> {
                     setState(() {
                       fileBytes = bytes;
                       fileName = result.name;
-                      selectedStatus = 'COMPLETED'; // Auto set to completed
                     });
                   }
                 },
@@ -294,7 +293,6 @@ class _AddAppointmentDialogState extends ConsumerState<AddAppointmentDialog> {
                             setState(() {
                               fileBytes = null;
                               fileName = null;
-                              selectedStatus = 'pending'; // Revert back
                             });
                           },
                         )
