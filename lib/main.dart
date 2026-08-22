@@ -18,6 +18,7 @@ class ManjuAdminApp extends ConsumerWidget {
       title: 'Manju Medical Admin',
       theme: AppTheme.themeData,
       routerConfig: router,
+      debugShowCheckedModeBanner: false,
     );
   }
 }
