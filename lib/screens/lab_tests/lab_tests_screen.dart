@@ -255,7 +255,7 @@ class LabTestsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Lab Test Bookings'),
+        title: const Text('Lab Tests Catalog'),
         backgroundColor: Colors.transparent,
         elevation: 0,
         foregroundColor: AppTheme.primaryGreen,
@@ -281,41 +281,18 @@ class LabTestsScreen extends StatelessWidget {
         padding: AppTheme.defaultScreenPadding,
         child: Column(
           children: [
-            const Row(
-              children: [
-                Expanded(child: AdminStatCard(title: 'Home Collection', value: '8', icon: Icons.home, iconColor: AppTheme.primaryGreen)),
-                SizedBox(width: 16),
-                Expanded(child: AdminStatCard(title: 'Lab Visit', value: '15', icon: Icons.science, iconColor: AppTheme.accentGreen)),
-              ],
-            ),
-            const SizedBox(height: 24),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text('Today\'s Schedule', style: Theme.of(context).textTheme.titleLarge),
-            ),
-            const SizedBox(height: 16),
-            Expanded(
-              child: ListView.builder(
-                itemCount: 3,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 16.0),
-                    child: NeumorphicCard(
-                      child: ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        leading: Container(
-                          width: 4,
-                          color: index == 0 ? AppTheme.pricePink : AppTheme.accentGreen,
-                        ),
-                        title: const Text('Complete Blood Count (CBC)'),
-                        subtitle: const Text('Patient: John Doe • Home Collection'),
-                        trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: AppTheme.textSecondary),
-                      ),
-                    ),
-                  );
-                },
+            const Spacer(),
+            const Center(
+              child: Text(
+                'No Lab Tests configured yet.',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.textSecondary,
+                ),
               ),
-            )
+            ),
+            const Spacer(),
           ],
         ),
       ),
