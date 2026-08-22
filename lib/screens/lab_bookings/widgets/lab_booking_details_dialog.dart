@@ -71,7 +71,13 @@ class _LabBookingDetailsDialogState extends ConsumerState<LabBookingDetailsDialo
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Lab Booking Details', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: AppTheme.primaryGreen)),
+                const Expanded(
+                  child: Text(
+                    'Lab Booking Details', 
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: AppTheme.primaryGreen),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   decoration: BoxDecoration(

@@ -22,6 +22,7 @@ class _AddLabBookingDialogState extends ConsumerState<AddLabBookingDialog> {
   
   DateTime selectedDate = DateTime.now();
   String selectedStatus = 'PENDING_CONFIRMATION';
+  bool _isSubmitting = false;
   
   // Mock cart
   List<Map<String, dynamic>> cartItems = [];
@@ -75,7 +76,7 @@ class _AddLabBookingDialogState extends ConsumerState<AddLabBookingDialog> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text('Add Mock Lab Booking', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: AppTheme.primaryGreen)),
+              const Text('Add Lab Booking', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: AppTheme.primaryGreen)),
               const SizedBox(height: 24),
               Expanded(
                 child: ListView(
@@ -243,7 +244,8 @@ class _AddLabBookingDialogState extends ConsumerState<AddLabBookingDialog> {
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                       ),
-                      onPressed: () {
+                      onPressed: _isSubmitting ? null : () async {
+                        setState(() => _isSubmitting = true);
                         // Submit logic (mock)
                         final booking = LabBooking(
                           id: '', // generated in notifier
@@ -262,8 +264,8 @@ class _AddLabBookingDialogState extends ConsumerState<AddLabBookingDialog> {
                           },
                         );
                         
-                        ref.read(labBookingProvider.notifier).addLabBooking(booking);
-                        Navigator.pop(context);
+                        await ref.read(labBookingProvider.notifier).addLabBooking(booking);
+                        if (mounted) Navigator.pop(context);
                       },
                       child: const Text('Create Lab Booking', style: TextStyle(fontWeight: FontWeight.bold)),
                     ),
