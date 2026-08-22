@@ -43,10 +43,10 @@ class DashboardShell extends ConsumerWidget {
                           icon: Icon(Icons.health_and_safety),
                           label: Text('Doctors'),
                         ),
-                        NavigationRailDestination(
-                          icon: Icon(Icons.medication),
-                          label: Text('Medicines'),
-                        ),
+                        // NavigationRailDestination(
+                        //   icon: Icon(Icons.medication),
+                        //   label: Text('Medicines'),
+                        // ),
                         NavigationRailDestination(
                           icon: Icon(Icons.biotech),
                           label: Text('Lab Tests'),
@@ -87,10 +87,10 @@ class DashboardShell extends ConsumerWidget {
               icon: Icon(Icons.health_and_safety),
               label: 'Doctors',
             ),
-            NavigationDestination(
-              icon: Icon(Icons.medication),
-              label: 'Medicines',
-            ),
+            // NavigationDestination(
+            //   icon: Icon(Icons.medication),
+            //   label: 'Medicines',
+            // ),
             NavigationDestination(
               icon: Icon(Icons.biotech),
               label: 'Lab Tests',
