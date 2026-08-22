@@ -7,6 +7,7 @@ import '../../widgets/admin_stat_card.dart';
 import '../../widgets/neumorphic_card.dart';
 import '../../models/doctor.dart';
 import '../../providers/doctor_provider.dart';
+import '../../providers/appointment_provider.dart';
 
 class DoctorBookingsScreen extends ConsumerWidget {
   const DoctorBookingsScreen({super.key});
@@ -204,7 +205,7 @@ class DoctorBookingsScreen extends ConsumerWidget {
     );
   }
 
-  void _showDoctorDetailsDialog(BuildContext context, WidgetRef ref, Doctor doctor) {
+  void _showDoctorDetailsDialog(BuildContext context, WidgetRef ref, Doctor doctor, int bookingsCount) {
     showDialog(
       context: context,
       builder: (context) {
@@ -267,7 +268,7 @@ class DoctorBookingsScreen extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     _buildDetailStat(Icons.work_history, doctor.experience.isNotEmpty ? doctor.experience : 'N/A', 'Experience'),
-                    _buildDetailStat(Icons.star, 'N/A', 'Rating'), // Rating isn't in backend yet, keeping placeholder
+                    _buildDetailStat(Icons.calendar_month, bookingsCount.toString(), 'Bookings'),
                     _buildDetailStat(Icons.currency_rupee, doctor.fee.toStringAsFixed(0), 'Fee'),
                   ],
                 ),
@@ -399,6 +400,7 @@ class DoctorBookingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final doctorsAsync = ref.watch(doctorProvider);
+    final appointmentsAsync = ref.watch(appointmentProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -441,10 +443,13 @@ class DoctorBookingsScreen extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(width: 16),
-                const Expanded(
+                Expanded(
                   child: AdminStatCard(
-                    title: 'Today\'s Appointments', 
-                    value: '0', 
+                    title: 'Total Appointments', 
+                    value: appointmentsAsync.maybeWhen(
+                      data: (appts) => appts.length.toString(),
+                      orElse: () => '0',
+                    ),
                     icon: Icons.calendar_today, 
                     iconColor: AppTheme.accentGreen
                   )
@@ -479,10 +484,15 @@ class DoctorBookingsScreen extends ConsumerWidget {
                     itemCount: doctors.length,
                     itemBuilder: (context, index) {
                       final doctor = doctors[index];
+                      final doctorBookings = appointmentsAsync.maybeWhen(
+                        data: (appts) => appts.where((a) => a.doctorId == doctor.id).length,
+                        orElse: () => 0,
+                      );
+                      
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 16.0),
                         child: InkWell(
-                          onTap: () => _showDoctorDetailsDialog(context, ref, doctor),
+                          onTap: () => _showDoctorDetailsDialog(context, ref, doctor, doctorBookings),
                           borderRadius: BorderRadius.circular(16),
                           child: NeumorphicCard(
                             child: ListTile(
