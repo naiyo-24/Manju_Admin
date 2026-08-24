@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 import 'package:csv/csv.dart';
 import '../../themes/app_theme.dart';
@@ -146,6 +147,53 @@ class LabTestsScreen extends ConsumerWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         foregroundColor: AppTheme.primaryGreen,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.file_download),
+            tooltip: 'Download CSV',
+            onPressed: () async {
+              if (!labTestsAsync.hasValue) return;
+
+              final tests = labTestsAsync.value!;
+              final List<List<dynamic>> csvData = [
+                ['ID', 'Type', 'Title', 'Price', 'Turnaround Time', 'Includes'],
+                ...tests.map((t) => [
+                  t.id,
+                  t.type,
+                  t.title,
+                  t.price,
+                  t.turnaroundTime,
+                  t.includes.join(';'),
+                ]),
+              ];
+
+              final String csvString = Csv().encode(csvData);
+              final Uint8List bytes = utf8.encoder.convert(csvString);
+
+              try {
+                await FilePicker.saveFile(
+                  fileName: 'lab_tests_catalog.csv',
+                  bytes: bytes,
+                  type: FileType.custom,
+                  allowedExtensions: ['csv'],
+                );
+
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('CSV download complete')),
+                  );
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error downloading CSV: $e')),
+                  );
+                }
+              }
+            },
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: AppTheme.primaryGreen,
