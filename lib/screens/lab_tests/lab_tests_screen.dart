@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:convert';
+import 'package:file_picker/file_picker.dart';
+import 'package:csv/csv.dart';
 import '../../themes/app_theme.dart';
+import '../../models/lab_test.dart';
 import '../../providers/lab_test_provider.dart';
 import 'widgets/add_lab_test_dialog.dart';
 
@@ -14,7 +18,78 @@ class LabTestsScreen extends ConsumerWidget {
     );
   }
 
-  void _showActionSheet(BuildContext context) {
+  Future<void> _handleBulkImport(BuildContext context, WidgetRef ref) async {
+    try {
+      final result = await FilePicker.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['csv'],
+      );
+
+      if (result.isNotEmpty) {
+        final bytes = await result.first.readAsBytes();
+        if (bytes.isEmpty) {
+          if (context.mounted) {
+             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to read file')));
+          }
+          return;
+        }
+
+        final csvString = utf8.decode(bytes);
+        final List<List<dynamic>> csvTable = Csv().decode(csvString);
+
+        if (csvTable.isEmpty || csvTable.length == 1) {
+          if (context.mounted) {
+             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('CSV file is empty or missing data')));
+          }
+          return;
+        }
+
+        int addedCount = 0;
+        final notifier = ref.read(labTestProvider.notifier);
+
+        for (int i = 1; i < csvTable.length; i++) {
+          final row = csvTable[i];
+          if (row.length >= 3) {
+            final title = row[0].toString();
+            final price = double.tryParse(row[1].toString()) ?? 0.0;
+            final turnaround = row[2].toString();
+            final type = row.length > 3 ? row[3].toString().toUpperCase() : 'SINGLE_TEST';
+            
+            List<String> includes = [];
+            if (row.length > 4 && row[4].toString().isNotEmpty) {
+               includes = row[4].toString().split(';').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
+            }
+
+            final test = LabTest(
+              id: '',
+              type: type == 'PACKAGE' ? 'PACKAGE' : 'SINGLE_TEST',
+              title: title,
+              price: price,
+              turnaroundTime: turnaround,
+              includes: includes,
+            );
+            
+            await notifier.addLabTest(test);
+            addedCount++;
+          }
+        }
+
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Successfully imported $addedCount lab tests')),
+          );
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error importing CSV: $e')),
+        );
+      }
+    }
+  }
+
+  void _showActionSheet(BuildContext context, WidgetRef ref) {
     showModalBottomSheet(
       context: context,
       backgroundColor: AppTheme.backgroundColor,
@@ -48,10 +123,10 @@ class LabTestsScreen extends ConsumerWidget {
               ListTile(
                 leading: const Icon(Icons.upload_file, color: Colors.blue),
                 title: const Text('Bulk Import (CSV)', style: TextStyle(fontWeight: FontWeight.bold)),
+                subtitle: const Text('Columns: Title, Price, Turnaround, Type (PACKAGE/SINGLE), Includes (use ; separator)'),
                 onTap: () {
                   Navigator.pop(context);
-                  // TODO: Implement CSV Upload logic
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('CSV Upload Mock Executed')));
+                  _handleBulkImport(context, ref);
                 },
               ),
             ],
@@ -75,7 +150,7 @@ class LabTestsScreen extends ConsumerWidget {
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: AppTheme.primaryGreen,
         foregroundColor: Colors.white,
-        onPressed: () => _showActionSheet(context),
+        onPressed: () => _showActionSheet(context, ref),
         icon: const Icon(Icons.add),
         label: const Text('Add New...'),
       ),
