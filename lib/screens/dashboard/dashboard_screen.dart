@@ -26,16 +26,7 @@ class DashboardScreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         foregroundColor: AppTheme.primaryGreen,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.file_download),
-            tooltip: 'Download CSV Report',
-            onPressed: () {
-              // TODO: Implement CSV download
-            },
-          ),
-          const SizedBox(width: 8),
-        ],
+
       ),
       body: SafeArea(
         child: SingleChildScrollView(

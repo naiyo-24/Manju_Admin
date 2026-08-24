@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'dart:typed_data';
+import 'package:csv/csv.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../themes/app_theme.dart';
@@ -26,8 +30,45 @@ class DoctorBookingsScreen extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.file_download),
             tooltip: 'Download CSV',
-            onPressed: () {
-              // TODO: Implement CSV download
+            onPressed: () async {
+              if (!doctorsAsync.hasValue) return;
+
+              final doctors = doctorsAsync.value!;
+              final List<List<dynamic>> csvData = [
+                ['ID', 'Name', 'Specialty', 'Experience', 'Fee', 'About'],
+                ...doctors.map((d) => [
+                  d.id,
+                  d.name,
+                  d.specialtyKey,
+                  d.experience,
+                  d.fee,
+                  d.about,
+                ]),
+              ];
+
+              final String csvString = Csv().encode(csvData);
+              final Uint8List bytes = utf8.encoder.convert(csvString);
+
+              try {
+                await FilePicker.saveFile(
+                  fileName: 'doctors_list.csv',
+                  bytes: bytes,
+                  type: FileType.custom,
+                  allowedExtensions: ['csv'],
+                );
+
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('CSV download complete')),
+                  );
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error downloading CSV: $e')),
+                  );
+                }
+              }
             },
           ),
           const SizedBox(width: 8),
