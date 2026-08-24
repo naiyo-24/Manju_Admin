@@ -12,7 +12,7 @@ class DashboardScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
-        title: const Text('Admin Dashboard Overview'),
+        title: const Text('Manju Medical Stores & Digital Clinic'),
         backgroundColor: Colors.transparent,
         elevation: 0,
         foregroundColor: AppTheme.primaryGreen,
