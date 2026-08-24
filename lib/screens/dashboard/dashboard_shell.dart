@@ -17,6 +17,37 @@ class DashboardShell extends ConsumerWidget {
     );
   }
 
+  Future<void> _showExitDialog(BuildContext context) async {
+    final shouldPop = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppTheme.backgroundColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Exit App?', style: TextStyle(color: AppTheme.primaryGreen, fontWeight: FontWeight.bold)),
+        content: const Text('Are you sure you want to exit the application?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel', style: TextStyle(color: AppTheme.textSecondary, fontWeight: FontWeight.bold)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.primaryGreen,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Exit', style: TextStyle(fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldPop ?? false) {
+      SystemNavigator.pop();
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // Determine if we should show a sidebar or bottom nav based on screen width
@@ -110,41 +141,36 @@ class DashboardShell extends ConsumerWidget {
       );
     }
 
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, result) async {
-        if (didPop) return;
-        
-        final shouldPop = await showDialog<bool>(
-          context: context,
-          builder: (context) => AlertDialog(
-            backgroundColor: AppTheme.backgroundColor,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            title: const Text('Exit App?', style: TextStyle(color: AppTheme.primaryGreen, fontWeight: FontWeight.bold)),
-            content: const Text('Are you sure you want to exit the application?'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: const Text('Cancel', style: TextStyle(color: AppTheme.textSecondary, fontWeight: FontWeight.bold)),
-              ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.primaryGreen,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                ),
-                onPressed: () => Navigator.pop(context, true),
-                child: const Text('Exit', style: TextStyle(fontWeight: FontWeight.bold)),
-              ),
-            ],
-          ),
-        );
-
-        if (shouldPop ?? false) {
-          SystemNavigator.pop();
+    return Focus(
+      autofocus: true,
+      canRequestFocus: true,
+      onKeyEvent: (node, event) {
+        if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.backspace) {
+          // Only trigger if no other focus node has primary focus (like a text field)
+          if (FocusManager.instance.primaryFocus == node) {
+            if (navigationShell.currentIndex != 0) {
+              _goBranch(0);
+            } else {
+              _showExitDialog(context);
+            }
+            return KeyEventResult.handled;
+          }
         }
+        return KeyEventResult.ignored;
       },
-      child: scaffoldContent,
+      child: PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) async {
+          if (didPop) return;
+          
+          if (navigationShell.currentIndex != 0) {
+            _goBranch(0);
+          } else {
+            await _showExitDialog(context);
+          }
+        },
+        child: scaffoldContent,
+      ),
     );
   }
 }
