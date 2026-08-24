@@ -5,7 +5,7 @@ import '../screens/auth/login_screen.dart';
 import '../screens/dashboard/dashboard_shell.dart';
 import '../screens/dashboard/dashboard_screen.dart';
 import '../screens/doctors/doctor_bookings_screen.dart';
-import '../screens/medicines/medicine_delivery_screen.dart';
+
 import '../screens/lab_tests/lab_tests_screen.dart';
 import '../screens/appointments/appointments_screen.dart';
 import '../screens/lab_bookings/lab_bookings_screen.dart';

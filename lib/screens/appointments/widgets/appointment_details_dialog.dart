@@ -5,6 +5,7 @@ import '../../../themes/app_theme.dart';
 import '../../../models/appointment.dart';
 import '../../../models/doctor.dart';
 import '../../../providers/appointment_provider.dart';
+import '../../../widgets/custom_dropdown.dart';
 
 class AppointmentDetailsDialog extends ConsumerStatefulWidget {
   final Appointment appt;
@@ -84,39 +85,25 @@ class _AppointmentDetailsDialogState extends ConsumerState<AppointmentDetailsDia
                 const Text('Status:', style: TextStyle(color: AppTheme.textSecondary, fontSize: 14)),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: AppTheme.accentGreen.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: AppTheme.accentGreen.withValues(alpha: 0.3)),
-                    ),
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
-                        value: selectedStatus,
-                        isExpanded: true,
-                        icon: const Icon(Icons.arrow_drop_down, color: AppTheme.primaryGreen),
-                        items: ['PENDING', 'CONFIRMED', 'COMPLETED']
-                            .map((s) => DropdownMenuItem(
-                                  value: s,
-                                  child: Text(
-                                    s,
-                                    style: const TextStyle(fontWeight: FontWeight.bold, color: AppTheme.primaryGreen),
-                                  ),
-                                ))
-                            .toList(),
-                        onChanged: (val) {
-                          if (val != null) {
-                            setState(() {
-                              selectedStatus = val;
-                            });
-                            ref.read(appointmentProvider.notifier).updateAppointment(
-                                  widget.appt.copyWith(status: val),
-                                );
-                          }
-                        },
-                      ),
-                    ),
+                  child: CustomDropdown<String>(
+                    value: selectedStatus,
+                    hint: '--Select Status--',
+                    items: ['PENDING', 'CONFIRMED', 'COMPLETED']
+                        .map((s) => DropdownMenuItem(
+                              value: s,
+                              child: Text(s),
+                            ))
+                        .toList(),
+                    onChanged: (val) {
+                      if (val != null) {
+                        setState(() {
+                          selectedStatus = val;
+                        });
+                        ref.read(appointmentProvider.notifier).updateAppointment(
+                              widget.appt.copyWith(status: val),
+                            );
+                      }
+                    },
                   ),
                 ),
               ],

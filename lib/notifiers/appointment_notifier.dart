@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 import '../models/appointment.dart';
@@ -25,7 +26,7 @@ class AppointmentNotifier extends AsyncNotifier<List<Appointment>> {
         state = AsyncValue.data([...state.value!, apptToSave]);
       }
     } catch (e) {
-      print('Error adding appointment: $e');
+      debugPrint('Error adding appointment: $e');
     }
   }
 
@@ -39,7 +40,7 @@ class AppointmentNotifier extends AsyncNotifier<List<Appointment>> {
         state = AsyncValue.data(updatedList);
       }
     } catch (e) {
-      print('Error updating appointment: $e');
+      debugPrint('Error updating appointment: $e');
     }
   }
 
@@ -51,7 +52,7 @@ class AppointmentNotifier extends AsyncNotifier<List<Appointment>> {
         state = AsyncValue.data(updatedList);
       }
     } catch (e) {
-      print('Error deleting appointment: $e');
+      debugPrint('Error deleting appointment: $e');
     }
   }
 }

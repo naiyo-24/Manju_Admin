@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 import '../models/doctor.dart';
@@ -41,7 +42,7 @@ class DoctorNotifier extends AsyncNotifier<List<Doctor>> {
         state = AsyncValue.data([...state.value!, doctorToSave]);
       }
     } catch (e) {
-      print('Error adding doctor: $e');
+      debugPrint('Error adding doctor: $e');
     }
   }
 
@@ -55,7 +56,7 @@ class DoctorNotifier extends AsyncNotifier<List<Doctor>> {
         state = AsyncValue.data(updatedList);
       }
     } catch (e) {
-      print('Error updating doctor: $e');
+      debugPrint('Error updating doctor: $e');
     }
   }
 
@@ -67,7 +68,7 @@ class DoctorNotifier extends AsyncNotifier<List<Doctor>> {
         state = AsyncValue.data(updatedList);
       }
     } catch (e) {
-      print('Error deleting doctor: $e');
+      debugPrint('Error deleting doctor: $e');
     }
   }
 }

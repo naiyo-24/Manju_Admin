@@ -5,6 +5,7 @@ import '../../../themes/app_theme.dart';
 import '../../../models/lab_booking.dart';
 import '../../../providers/lab_booking_provider.dart';
 import '../../../providers/lab_test_provider.dart';
+import '../../../widgets/custom_dropdown.dart';
 
 class AddLabBookingDialog extends ConsumerStatefulWidget {
   const AddLabBookingDialog({super.key});
@@ -157,13 +158,9 @@ class _AddLabBookingDialogState extends ConsumerState<AddLabBookingDialog> {
                     const SizedBox(height: 16),
                     
                     // Status Dropdown
-                    DropdownButtonFormField<String>(
+                    CustomDropdown<String>(
                       value: selectedStatus,
-                      decoration: InputDecoration(
-                        labelText: 'Status',
-                        prefixIcon: const Icon(Icons.info_outline, color: AppTheme.accentGreen),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
-                      ),
+                      hint: '--Select Status--',
                       items: ['PENDING_CONFIRMATION', 'SAMPLE_COLLECTED', 'REPORT_READY']
                           .map((s) => DropdownMenuItem(value: s, child: Text(s.replaceAll('_', ' '))))
                           .toList(),
@@ -187,13 +184,9 @@ class _AddLabBookingDialogState extends ConsumerState<AddLabBookingDialog> {
                         return Row(
                           children: [
                             Expanded(
-                              child: DropdownButtonFormField<String>(
+                              child: CustomDropdown<String>(
                                 value: _selectedTestId,
-                                hint: const Text('Choose a test...'),
-                                decoration: InputDecoration(
-                                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
-                                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                                ),
+                                hint: '--Select Test--',
                                 items: tests.map((t) => DropdownMenuItem(
                                   value: t.id,
                                   child: Text('${t.title} (₹${t.price})'),

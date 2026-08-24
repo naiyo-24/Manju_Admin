@@ -6,6 +6,7 @@ import 'package:file_picker/file_picker.dart';
 import '../../../themes/app_theme.dart';
 import '../../../models/lab_booking.dart';
 import '../../../providers/lab_booking_provider.dart';
+import '../../../widgets/custom_dropdown.dart';
 
 class LabBookingDetailsDialog extends ConsumerStatefulWidget {
   final LabBooking booking;
@@ -78,37 +79,28 @@ class _LabBookingDetailsDialogState extends ConsumerState<LabBookingDetailsDialo
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: AppTheme.accentGreen.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppTheme.accentGreen.withValues(alpha: 0.3)),
-                  ),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton<String>(
-                      value: selectedStatus,
-                      icon: const Icon(Icons.arrow_drop_down, color: AppTheme.primaryGreen),
-                      items: ['PENDING_CONFIRMATION', 'SAMPLE_COLLECTED', 'REPORT_READY']
-                          .map((s) => DropdownMenuItem(
-                                value: s,
-                                child: Text(
-                                  s.replaceAll('_', ' '),
-                                  style: const TextStyle(fontWeight: FontWeight.bold, color: AppTheme.primaryGreen, fontSize: 12),
-                                ),
-                              ))
-                          .toList(),
-                      onChanged: (val) {
-                        if (val != null) {
-                          setState(() {
-                            selectedStatus = val;
-                          });
-                          ref.read(labBookingProvider.notifier).updateLabBooking(
-                                widget.booking.copyWith(status: val),
-                              );
-                        }
-                      },
-                    ),
+                Expanded(
+                  child: CustomDropdown<String>(
+                    value: selectedStatus,
+                    hint: '--Select Status--',
+                    items: ['PENDING_CONFIRMATION', 'SAMPLE_COLLECTED', 'REPORT_READY']
+                        .map((s) => DropdownMenuItem(
+                              value: s,
+                              child: Text(
+                                s.replaceAll('_', ' '),
+                              ),
+                            ))
+                        .toList(),
+                    onChanged: (val) {
+                      if (val != null) {
+                        setState(() {
+                          selectedStatus = val;
+                        });
+                        ref.read(labBookingProvider.notifier).updateLabBooking(
+                              widget.booking.copyWith(status: val),
+                            );
+                      }
+                    },
                   ),
                 ),
               ],

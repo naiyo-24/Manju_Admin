@@ -7,6 +7,7 @@ import '../../../themes/app_theme.dart';
 import '../../../models/appointment.dart';
 import '../../../providers/appointment_provider.dart';
 import '../../../providers/doctor_provider.dart';
+import '../../../widgets/custom_dropdown.dart';
 
 class AddAppointmentDialog extends ConsumerStatefulWidget {
   const AddAppointmentDialog({super.key});
@@ -56,33 +57,7 @@ class _AddAppointmentDialogState extends ConsumerState<AddAppointmentDialog> {
     );
   }
 
-  Widget _buildDropdown<T>({
-    required T? value,
-    required List<DropdownMenuItem<T>> items,
-    required String hint,
-    required Function(T?) onChanged,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      decoration: BoxDecoration(
-        color: AppTheme.backgroundColor,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: const [
-          BoxShadow(color: AppTheme.shadowInsetDark, offset: Offset(3, 3), blurRadius: 6, spreadRadius: -2),
-          BoxShadow(color: Colors.white, offset: Offset(-3, -3), blurRadius: 6, spreadRadius: 1),
-        ],
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<T>(
-          isExpanded: true,
-          hint: Text(hint, style: const TextStyle(color: AppTheme.textSecondary)),
-          value: value,
-          items: items,
-          onChanged: onChanged,
-        ),
-      ),
-    );
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -142,9 +117,9 @@ class _AddAppointmentDialogState extends ConsumerState<AddAppointmentDialog> {
               const SizedBox(height: 24),
               
               // Doctor Selection
-              _buildDropdown<String>(
+              CustomDropdown<String>(
                 value: selectedDoctorId,
-                hint: 'Select Doctor (Optional)',
+                hint: '--Select Doctor--',
                 items: doctorsAsync.maybeWhen(
                   data: (doctors) {
                     return doctors.map((doc) => DropdownMenuItem(
@@ -206,9 +181,9 @@ class _AddAppointmentDialogState extends ConsumerState<AddAppointmentDialog> {
                   ),
                   const SizedBox(width: 16),
                   Expanded(
-                    child: _buildDropdown<String>(
+                    child: CustomDropdown<String>(
                       value: selectedStatus,
-                      hint: 'Status',
+                      hint: '--Select Status--',
                       items: const [
                         DropdownMenuItem(value: 'pending', child: Text('Pending')),
                         DropdownMenuItem(value: 'confirmed', child: Text('Confirmed')),
@@ -235,9 +210,9 @@ class _AddAppointmentDialogState extends ConsumerState<AddAppointmentDialog> {
                   ),
                   const SizedBox(width: 16),
                   Expanded(
-                    child: _buildDropdown<String>(
+                    child: CustomDropdown<String>(
                       value: selectedGender,
-                      hint: 'Gender (Optional)',
+                      hint: '--Select Gender--',
                       items: const [
                         DropdownMenuItem(value: 'Male', child: Text('Male')),
                         DropdownMenuItem(value: 'Female', child: Text('Female')),
