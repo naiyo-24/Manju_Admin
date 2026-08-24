@@ -151,7 +151,28 @@ class LabTestsScreen extends ConsumerWidget {
                           IconButton(
                             icon: const Icon(Icons.delete, color: Colors.red),
                             onPressed: () {
-                              ref.read(labTestProvider.notifier).deleteLabTest(test.id);
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  backgroundColor: AppTheme.backgroundColor,
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                  title: const Text('Delete Lab Test', style: TextStyle(color: AppTheme.primaryGreen, fontWeight: FontWeight.bold)),
+                                  content: Text('Are you sure you want to delete ${test.title}? This action cannot be undone.'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: const Text('Cancel', style: TextStyle(color: AppTheme.textSecondary)),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        ref.read(labTestProvider.notifier).deleteLabTest(test.id);
+                                        Navigator.pop(context);
+                                      },
+                                      child: const Text('Delete', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+                                    ),
+                                  ],
+                                ),
+                              );
                             },
                           ),
                         ],
