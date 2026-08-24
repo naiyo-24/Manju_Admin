@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/auth_provider.dart';
@@ -21,8 +22,9 @@ class DashboardShell extends ConsumerWidget {
     // Determine if we should show a sidebar or bottom nav based on screen width
     final isDesktop = MediaQuery.of(context).size.width >= 800;
 
+    Widget scaffoldContent;
     if (isDesktop) {
-      return Scaffold(
+      scaffoldContent = Scaffold(
         body: Row(
           children: [
             Container(
@@ -43,10 +45,6 @@ class DashboardShell extends ConsumerWidget {
                           icon: Icon(Icons.health_and_safety),
                           label: Text('Doctors'),
                         ),
-                        // NavigationRailDestination(
-                        //   icon: Icon(Icons.medication),
-                        //   label: Text('Medicines'),
-                        // ),
                         NavigationRailDestination(
                           icon: Icon(Icons.event_available),
                           label: Text('Appointments'),
@@ -81,7 +79,7 @@ class DashboardShell extends ConsumerWidget {
         ),
       );
     } else {
-      return Scaffold(
+      scaffoldContent = Scaffold(
         body: navigationShell,
         bottomNavigationBar: NavigationBar(
           selectedIndex: navigationShell.currentIndex,
@@ -95,10 +93,6 @@ class DashboardShell extends ConsumerWidget {
               icon: Icon(Icons.health_and_safety),
               label: 'Doctors',
             ),
-            // NavigationDestination(
-            //   icon: Icon(Icons.medication),
-            //   label: 'Medicines',
-            // ),
             NavigationDestination(
               icon: Icon(Icons.event_available),
               label: 'Appointments',
@@ -115,6 +109,43 @@ class DashboardShell extends ConsumerWidget {
         ),
       );
     }
+
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        
+        final shouldPop = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            backgroundColor: AppTheme.backgroundColor,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            title: const Text('Exit App?', style: TextStyle(color: AppTheme.primaryGreen, fontWeight: FontWeight.bold)),
+            content: const Text('Are you sure you want to exit the application?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Cancel', style: TextStyle(color: AppTheme.textSecondary, fontWeight: FontWeight.bold)),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.primaryGreen,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                ),
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Exit', style: TextStyle(fontWeight: FontWeight.bold)),
+              ),
+            ],
+          ),
+        );
+
+        if (shouldPop ?? false) {
+          SystemNavigator.pop();
+        }
+      },
+      child: scaffoldContent,
+    );
   }
 }
 
