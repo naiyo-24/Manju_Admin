@@ -268,7 +268,13 @@ class LabTestsScreen extends ConsumerWidget {
                           IconButton(
                             icon: const Icon(Icons.edit, color: AppTheme.accentGreen),
                             onPressed: () {
-                              // TODO: Implement Edit Dialog
+                              showDialog(
+                                context: context,
+                                builder: (context) => AddLabTestDialog(
+                                  isPackage: test.type == 'PACKAGE',
+                                  existingTest: test,
+                                ),
+                              );
                             },
                           ),
                           IconButton(

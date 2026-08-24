@@ -6,10 +6,12 @@ import '../../../providers/lab_test_provider.dart';
 
 class AddLabTestDialog extends ConsumerStatefulWidget {
   final bool isPackage;
+  final LabTest? existingTest;
   
   const AddLabTestDialog({
     super.key,
     required this.isPackage,
+    this.existingTest,
   });
 
   @override
@@ -27,6 +29,17 @@ class _AddLabTestDialogState extends ConsumerState<AddLabTestDialog> {
   final _includeItemController = TextEditingController();
   
   bool _isSubmitting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.existingTest != null) {
+      _titleController.text = widget.existingTest!.title;
+      _priceController.text = widget.existingTest!.price.toString();
+      _turnaroundController.text = widget.existingTest!.turnaroundTime;
+      _includes.addAll(widget.existingTest!.includes);
+    }
+  }
 
   void _addIncludeItem() {
     final text = _includeItemController.text.trim();
@@ -122,11 +135,15 @@ class _AddLabTestDialogState extends ConsumerState<AddLabTestDialog> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          widget.isPackage ? 'Add Test Package' : 'Add Single Test',
+                          widget.existingTest != null
+                              ? (widget.isPackage ? 'Edit Test Package' : 'Edit Single Test')
+                              : (widget.isPackage ? 'Add Test Package' : 'Add Single Test'),
                           style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: AppTheme.primaryGreen, letterSpacing: -0.5),
                         ),
                         Text(
-                          widget.isPackage ? 'Create a bundle of multiple lab tests.' : 'Add a new individual lab test.',
+                          widget.existingTest != null
+                              ? 'Modify the details of your lab test.'
+                              : (widget.isPackage ? 'Create a bundle of multiple lab tests.' : 'Add a new individual lab test.'),
                           style: const TextStyle(fontSize: 13, color: AppTheme.textSecondary),
                         ),
                       ],
@@ -249,8 +266,8 @@ class _AddLabTestDialogState extends ConsumerState<AddLabTestDialog> {
                         setState(() => _isSubmitting = true);
                         
                         final test = LabTest(
-                          id: '',
-                          type: widget.isPackage ? 'PACKAGE' : 'SINGLE_TEST',
+                          id: widget.existingTest?.id ?? '',
+                          type: widget.existingTest?.type ?? (widget.isPackage ? 'PACKAGE' : 'SINGLE_TEST'),
                           title: _titleController.text.trim(),
                           price: double.parse(_priceController.text.trim()),
                           turnaroundTime: _turnaroundController.text.trim(),
@@ -258,12 +275,16 @@ class _AddLabTestDialogState extends ConsumerState<AddLabTestDialog> {
                         );
                         
                         final nav = Navigator.of(context);
-                        await ref.read(labTestProvider.notifier).addLabTest(test);
+                        if (widget.existingTest != null) {
+                          await ref.read(labTestProvider.notifier).updateLabTest(test);
+                        } else {
+                          await ref.read(labTestProvider.notifier).addLabTest(test);
+                        }
                         
                         if (mounted) nav.pop();
                       }
                     },
-                    child: const Text('Save to Catalog', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    child: Text(widget.existingTest != null ? 'Update Catalog' : 'Save to Catalog', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                   ),
                 ],
               ),
