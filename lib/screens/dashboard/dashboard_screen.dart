@@ -12,7 +12,17 @@ class DashboardScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
-        title: const Text('Manju Medical Stores & Digital Clinic'),
+        title: Row(
+          children: [
+            Image.asset(
+              'assets/manju.png',
+              height: 48,
+              errorBuilder: (context, error, stackTrace) => const Icon(Icons.local_pharmacy),
+            ),
+            const SizedBox(width: 12),
+            const Text('Manju Medical Stores & Digital Clinic'),
+          ],
+        ),
         backgroundColor: Colors.transparent,
         elevation: 0,
         foregroundColor: AppTheme.primaryGreen,
