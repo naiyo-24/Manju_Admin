@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 import '../models/lab_test.dart';
@@ -15,17 +16,14 @@ class LabTestNotifier extends AsyncNotifier<List<LabTest>> {
 
   Future<void> addLabTest(LabTest newTest) async {
     try {
-      final testToSave = newTest.id.isEmpty 
-          ? newTest.copyWith(id: _uuid.v4()) 
-          : newTest;
-          
-      await _service.createLabTest(testToSave);
+      final createdTest = await _service.createLabTest(newTest);
       
       if (state.hasValue) {
-        state = AsyncValue.data(await _service.getLabTests());
+        state = AsyncValue.data([...state.value!, createdTest]);
       }
     } catch (e) {
-      // Ignore error for mock
+      debugPrint('Error adding lab test: $e');
+      rethrow;
     }
   }
 
@@ -33,10 +31,12 @@ class LabTestNotifier extends AsyncNotifier<List<LabTest>> {
     try {
       await _service.updateLabTest(test);
       if (state.hasValue) {
-        state = AsyncValue.data(await _service.getLabTests());
+        final updatedList = state.value!.map((t) => t.id == test.id ? test : t).toList();
+        state = AsyncValue.data(updatedList);
       }
     } catch (e) {
-      // Ignore error for mock
+      debugPrint('Error updating lab test: $e');
+      rethrow;
     }
   }
 
@@ -44,10 +44,12 @@ class LabTestNotifier extends AsyncNotifier<List<LabTest>> {
     try {
       await _service.deleteLabTest(id);
       if (state.hasValue) {
-        state = AsyncValue.data(await _service.getLabTests());
+        final updatedList = state.value!.where((t) => t.id != id).toList();
+        state = AsyncValue.data(updatedList);
       }
     } catch (e) {
-      // Ignore error for mock
+      debugPrint('Error deleting lab test: $e');
+      rethrow;
     }
   }
 }
