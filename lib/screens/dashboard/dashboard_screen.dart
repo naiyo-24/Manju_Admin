@@ -97,7 +97,7 @@ class DashboardScreen extends ConsumerWidget {
 
                   String labSubtitle = 'Waiting for completed lab tests';
                   if (labBookingsAsync.hasValue && labBookingsAsync.value!.isNotEmpty) {
-                    final completedBookings = labBookingsAsync.value!.where((b) => b.status.toUpperCase() == 'COMPLETED').toList();
+                    final completedBookings = labBookingsAsync.value!.where((b) => b.status.toUpperCase() == 'REPORT_READY').toList();
                     if (completedBookings.isNotEmpty) {
                       labSubtitle = 'A lab test report was recently finalized';
                     }
