@@ -3,7 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'routes/app_router.dart';
 import 'themes/app_theme.dart';
 
+import 'services/api_client.dart';
+
 void main() {
+  ApiClient().initialize(); // Initialize network clients
   runApp(const ProviderScope(child: ManjuAdminApp()));
 }
 

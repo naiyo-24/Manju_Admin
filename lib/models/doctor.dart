@@ -38,4 +38,27 @@ class Doctor {
       profilePicture: profilePicture ?? this.profilePicture,
     );
   }
+
+  factory Doctor.fromJson(Map<String, dynamic> json) {
+    return Doctor(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      specialtyKey: json['specialtyKey'] as String? ?? '',
+      experience: json['experience'] as String? ?? '',
+      fee: (json['fee'] as num?)?.toDouble() ?? 0.0,
+      about: json['about'] as String? ?? '',
+      // profilePicture normally handled via a URL or separate REST endpoint
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      if (id.isNotEmpty) 'id': id,
+      'name': name,
+      'specialtyKey': specialtyKey,
+      'experience': experience,
+      'fee': fee,
+      'about': about,
+    };
+  }
 }

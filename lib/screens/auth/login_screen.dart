@@ -13,6 +13,48 @@ class LoginScreen extends ConsumerStatefulWidget {
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   bool _isPasswordVisible = false;
+  bool _isLoading = false;
+
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleLogin() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter email and password')),
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
+    
+    try {
+      await ref.read(authProvider.notifier).login(email, password);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString().replaceAll('Exception: ', '')),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,12 +77,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 32),
-                  _buildTextField(context, 'Username', Icons.person),
+                  _buildTextField(
+                    context, 
+                    'Email', 
+                    Icons.person,
+                    controller: _emailController,
+                  ),
                   const SizedBox(height: 16),
                   _buildTextField(
                     context, 
                     'Password', 
                     Icons.lock, 
+                    controller: _passwordController,
                     obscureText: !_isPasswordVisible,
                     suffixIcon: IconButton(
                       icon: Icon(
@@ -59,10 +107,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     width: double.infinity,
                     child: ElevatedButton(
                       style: AppTheme.primaryButtonStyle,
-                      onPressed: () {
-                        ref.read(authProvider.notifier).login();
-                      },
-                      child: const Text('LOGIN'),
+                      onPressed: _isLoading ? null : _handleLogin,
+                      child: _isLoading 
+                        ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                        : const Text('LOGIN'),
                     ),
                   ),
                 ],
@@ -74,7 +122,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
-  Widget _buildTextField(BuildContext context, String hint, IconData icon, {bool obscureText = false, Widget? suffixIcon}) {
+  Widget _buildTextField(BuildContext context, String hint, IconData icon, {bool obscureText = false, Widget? suffixIcon, TextEditingController? controller}) {
     return Container(
       decoration: BoxDecoration(
         color: AppTheme.backgroundColor,
@@ -85,6 +133,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ],
       ),
       child: TextField(
+        controller: controller,
         obscureText: obscureText,
         decoration: InputDecoration(
           prefixIcon: Icon(icon, color: AppTheme.primaryGreen),
@@ -98,4 +147,5 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 }
+
 

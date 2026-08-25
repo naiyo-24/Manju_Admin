@@ -1,34 +1,75 @@
+import 'package:dio/dio.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 import '../models/doctor.dart';
+import 'api_client.dart';
 
-/// This service will eventually handle REST and GraphQL requests.
-/// For now, it provides dummy operations so the UI can be tested.
 class DoctorService {
-  
-  // Simulated backend DB
-  final List<Doctor> _mockDatabase = [];
+  final GraphQLClient _graphQLClient = ApiClient().graphQLClient;
+  final Dio _dio = ApiClient().dio;
+
+  // GraphQL Queries
+  static const String _getDoctorsQuery = '''
+    query GetDoctors {
+      getDoctors {
+        id
+        name
+        specialtyKey
+        experience
+        fee
+        about
+      }
+    }
+  ''';
 
   Future<List<Doctor>> getDoctors() async {
-    // Simulate network delay
-    await Future.delayed(const Duration(milliseconds: 500));
-    return List.from(_mockDatabase);
+    final QueryOptions options = QueryOptions(
+      document: gql(_getDoctorsQuery),
+      fetchPolicy: FetchPolicy.noCache,
+    );
+
+    final QueryResult result = await _graphQLClient.query(options);
+
+    if (result.hasException) {
+      throw Exception(ApiClient().handleError(result.exception));
+    }
+
+    final List<dynamic>? doctorsData = result.data?['getDoctors'];
+    if (doctorsData == null) return [];
+
+    return doctorsData.map((json) => Doctor.fromJson(json as Map<String, dynamic>)).toList();
   }
 
   Future<Doctor> createDoctor(Doctor doctor) async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    _mockDatabase.add(doctor);
-    return doctor;
+    try {
+      final response = await _dio.post(
+        '/api/admin/doctors/',
+        data: doctor.toJson(),
+      );
+      
+      return Doctor.fromJson(response.data as Map<String, dynamic>);
+    } catch (e) {
+      throw Exception(ApiClient().handleError(e));
+    }
   }
 
   Future<void> updateDoctor(Doctor doctor) async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    final index = _mockDatabase.indexWhere((d) => d.id == doctor.id);
-    if (index != -1) {
-      _mockDatabase[index] = doctor;
+    try {
+      await _dio.put(
+        '/api/admin/doctors/${doctor.id}',
+        data: doctor.toJson(),
+      );
+    } catch (e) {
+      throw Exception(ApiClient().handleError(e));
     }
   }
 
   Future<void> deleteDoctor(String id) async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    _mockDatabase.removeWhere((d) => d.id == id);
+    try {
+      await _dio.delete('/api/admin/doctors/$id');
+    } catch (e) {
+      throw Exception(ApiClient().handleError(e));
+    }
   }
 }
+
+
