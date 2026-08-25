@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../services/api_client.dart';
 import '../../../themes/app_theme.dart';
 import '../../../models/doctor.dart';
 import '../../../providers/doctor_provider.dart';
@@ -43,21 +44,21 @@ class DoctorDetailsDialog extends ConsumerWidget {
               width: 120,
               height: 120,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppTheme.accentGreen,
                 shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(color: AppTheme.primaryGreen.withValues(alpha: 0.2), blurRadius: 20, offset: const Offset(0, 10)),
-                ],
-                border: Border.all(color: AppTheme.accentGreen, width: 3),
-                image: doctor.profilePicture != null
+                image: (doctor.imageUrl != null || doctor.profilePicture != null)
                     ? DecorationImage(
-                        image: MemoryImage(doctor.profilePicture!),
+                        image: doctor.imageUrl != null
+                            ? NetworkImage('${ApiClient.baseUrl}${doctor.imageUrl!}') as ImageProvider
+                            : MemoryImage(doctor.profilePicture!),
                         fit: BoxFit.cover,
                       )
                     : null,
               ),
-              child: doctor.profilePicture == null
-                  ? const Center(child: Icon(Icons.person, size: 60, color: AppTheme.primaryGreen))
+              child: (doctor.imageUrl == null && doctor.profilePicture == null)
+                  ? const Center(
+                      child: Icon(Icons.person, size: 64, color: Colors.white),
+                    )
                   : null,
             ),
             const SizedBox(height: 24),

@@ -8,6 +8,7 @@ class Doctor {
   final double fee;
   final String about;
   final Uint8List? profilePicture;
+  final String? imageUrl;
 
   Doctor({
     required this.id,
@@ -17,6 +18,7 @@ class Doctor {
     required this.fee,
     this.about = '',
     this.profilePicture,
+    this.imageUrl,
   });
 
   Doctor copyWith({
@@ -27,6 +29,7 @@ class Doctor {
     double? fee,
     String? about,
     Uint8List? profilePicture,
+    String? imageUrl,
   }) {
     return Doctor(
       id: id ?? this.id,
@@ -36,6 +39,7 @@ class Doctor {
       fee: fee ?? this.fee,
       about: about ?? this.about,
       profilePicture: profilePicture ?? this.profilePicture,
+      imageUrl: imageUrl ?? this.imageUrl,
     );
   }
 
@@ -47,7 +51,7 @@ class Doctor {
       experience: json['experience'] as String? ?? '',
       fee: (json['fee'] as num?)?.toDouble() ?? 0.0,
       about: json['about'] as String? ?? '',
-      // profilePicture normally handled via a URL or separate REST endpoint
+      imageUrl: json['image_url'] as String? ?? json['imageUrl'] as String?,
     );
   }
 
@@ -59,6 +63,7 @@ class Doctor {
       'experience': experience,
       'fee': fee,
       'about': about,
+      // We don't send imageUrl in JSON, it's updated via a separate file upload endpoint
     };
   }
 }

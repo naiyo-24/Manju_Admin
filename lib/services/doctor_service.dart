@@ -17,6 +17,7 @@ class DoctorService {
         experience
         fee
         about
+        imageUrl
       }
     }
   ''';

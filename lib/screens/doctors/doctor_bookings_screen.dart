@@ -4,6 +4,7 @@ import 'package:csv/csv.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../services/api_client.dart';
 import '../../themes/app_theme.dart';
 import '../../widgets/admin_stat_card.dart';
 import '../../widgets/neumorphic_card.dart';
@@ -165,12 +166,15 @@ class DoctorBookingsScreen extends ConsumerWidget {
                           child: NeumorphicCard(
                             child: ListTile(
                               leading: CircleAvatar(
-                                backgroundColor: AppTheme.accentGreen,
-                                backgroundImage: doctor.profilePicture != null 
-                                    ? MemoryImage(doctor.profilePicture!) 
-                                    : null,
-                                child: doctor.profilePicture == null 
-                                    ? const Icon(Icons.person, color: Colors.white)
+                                radius: 40,
+                                backgroundColor: AppTheme.primaryGreen.withOpacity(0.1),
+                                backgroundImage: doctor.imageUrl != null 
+                                    ? NetworkImage('${ApiClient.baseUrl}${doctor.imageUrl!}') as ImageProvider
+                                    : (doctor.profilePicture != null 
+                                        ? MemoryImage(doctor.profilePicture!) 
+                                        : null),
+                                child: (doctor.imageUrl == null && doctor.profilePicture == null)
+                                    ? const Icon(Icons.person, size: 40, color: AppTheme.primaryGreen)
                                     : null,
                               ),
                               title: Text(
