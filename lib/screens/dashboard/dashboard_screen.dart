@@ -47,17 +47,15 @@ class DashboardScreen extends StatelessWidget {
                 builder: (context, constraints) {
                   final isWide = constraints.maxWidth > 600;
                   return GridView.count(
-                    crossAxisCount: isWide ? 4 : 2,
+                    crossAxisCount: isWide ? 2 : 2,
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     crossAxisSpacing: 16,
                     mainAxisSpacing: 16,
-                    childAspectRatio: isWide ? 2.5 : 1.4,
+                    childAspectRatio: isWide ? 4.0 : 1.4,
                     children: const [
                       AdminStatCard(title: 'Active Doctors', value: '42', icon: Icons.health_and_safety, iconColor: AppTheme.primaryGreen),
-                      AdminStatCard(title: 'Pending Meds', value: '12', icon: Icons.medication, iconColor: AppTheme.pricePink),
                       AdminStatCard(title: 'Lab Tests', value: '23', icon: Icons.biotech, iconColor: AppTheme.accentGreen),
-                      AdminStatCard(title: 'Total Revenue', value: '₹ 12.5k', icon: Icons.account_balance_wallet, iconColor: AppTheme.primaryGreen),
                     ],
                   );
                 },
@@ -80,13 +78,11 @@ class DashboardScreen extends StatelessWidget {
               ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                itemCount: 4,
+                itemCount: 2,
                 itemBuilder: (context, index) {
                   final activities = [
                     {'title': 'New Doctor Registered', 'subtitle': 'Dr. Alan Smith joined the platform', 'icon': Icons.person_add, 'color': AppTheme.primaryGreen},
-                    {'title': 'Medicine Order Dispatched', 'subtitle': 'Order #MMD-004 is on the way', 'icon': Icons.local_shipping, 'color': AppTheme.accentGreen},
                     {'title': 'Lab Test Completed', 'subtitle': 'CBC test results uploaded for John Doe', 'icon': Icons.check_circle, 'color': AppTheme.primaryGreen},
-                    {'title': 'Payment Failed', 'subtitle': 'Order #MMD-002 payment declined', 'icon': Icons.error, 'color': AppTheme.pricePink},
                   ];
                   final activity = activities[index];
                   final Color iconColor = activity['color'] as Color;
@@ -130,6 +126,17 @@ class DashboardScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _getGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour < 12) {
+      return 'Good Morning, Admin! ☀️';
+    } else if (hour < 17) {
+      return 'Good Afternoon, Admin! 🌤️';
+    } else {
+      return 'Good Evening, Admin! 🌙';
+    }
   }
 
   Widget _buildPremiumBanner(BuildContext context) {
@@ -183,9 +190,9 @@ class DashboardScreen extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Good Morning, Admin! ☀️',
-                style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w900, letterSpacing: -0.5),
+              Text(
+                _getGreeting(),
+                style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w900, letterSpacing: -0.5),
               ),
               const SizedBox(height: 8),
               Text(
