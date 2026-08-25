@@ -43,7 +43,7 @@ class Doctor {
     return Doctor(
       id: json['id'] as String,
       name: json['name'] as String,
-      specialtyKey: json['specialtyKey'] as String? ?? '',
+      specialtyKey: json['specialty_key'] as String? ?? json['specialtyKey'] as String? ?? '',
       experience: json['experience'] as String? ?? '',
       fee: (json['fee'] as num?)?.toDouble() ?? 0.0,
       about: json['about'] as String? ?? '',
@@ -55,7 +55,7 @@ class Doctor {
     return {
       if (id.isNotEmpty) 'id': id,
       'name': name,
-      'specialtyKey': specialtyKey,
+      'specialty_key': specialtyKey, // Backend expects snake_case
       'experience': experience,
       'fee': fee,
       'about': about,
