@@ -15,7 +15,7 @@ class LabTestService {
         type
         title
         price
-        turnaround_time
+        turnaroundTime
         includes
       }
     }
