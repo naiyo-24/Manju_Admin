@@ -1,14 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../themes/app_theme.dart';
 import '../../widgets/admin_stat_card.dart';
 import '../../widgets/neumorphic_card.dart';
+import '../../providers/doctor_provider.dart';
+import '../../providers/lab_booking_provider.dart';
 
-class DashboardScreen extends StatelessWidget {
+class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    
+    final doctorsAsync = ref.watch(doctorProvider);
+    final labBookingsAsync = ref.watch(labBookingProvider);
+    
+    final doctorCount = doctorsAsync.value?.length.toString() ?? '0';
+    final labBookingCount = labBookingsAsync.value?.length.toString() ?? '0';
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
@@ -53,9 +62,9 @@ class DashboardScreen extends StatelessWidget {
                     crossAxisSpacing: 16,
                     mainAxisSpacing: 16,
                     childAspectRatio: isWide ? 4.0 : 1.4,
-                    children: const [
-                      AdminStatCard(title: 'Active Doctors', value: '42', icon: Icons.health_and_safety, iconColor: AppTheme.primaryGreen),
-                      AdminStatCard(title: 'Lab Tests', value: '23', icon: Icons.biotech, iconColor: AppTheme.accentGreen),
+                    children: [
+                      AdminStatCard(title: 'Active Doctors', value: doctorCount, icon: Icons.health_and_safety, iconColor: AppTheme.primaryGreen),
+                      AdminStatCard(title: 'Lab Bookings', value: labBookingCount, icon: Icons.science_outlined, iconColor: AppTheme.accentGreen),
                     ],
                   );
                 },
@@ -80,8 +89,14 @@ class DashboardScreen extends StatelessWidget {
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: 2,
                 itemBuilder: (context, index) {
+                  String doctorSubtitle = 'Waiting for doctors to join';
+                  if (doctorsAsync.hasValue && doctorsAsync.value!.isNotEmpty) {
+                    final latestDoctor = doctorsAsync.value!.last;
+                    doctorSubtitle = 'Dr. ${latestDoctor.name} joined the platform';
+                  }
+
                   final activities = [
-                    {'title': 'New Doctor Registered', 'subtitle': 'Dr. Alan Smith joined the platform', 'icon': Icons.person_add, 'color': AppTheme.primaryGreen},
+                    {'title': 'New Doctor Registered', 'subtitle': doctorSubtitle, 'icon': Icons.person_add, 'color': AppTheme.primaryGreen},
                     {'title': 'Lab Test Completed', 'subtitle': 'CBC test results uploaded for John Doe', 'icon': Icons.check_circle, 'color': AppTheme.primaryGreen},
                   ];
                   final activity = activities[index];
