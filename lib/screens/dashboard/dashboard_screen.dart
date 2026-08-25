@@ -95,9 +95,17 @@ class DashboardScreen extends ConsumerWidget {
                     doctorSubtitle = 'Dr. ${latestDoctor.name} joined the platform';
                   }
 
+                  String labSubtitle = 'Waiting for completed lab tests';
+                  if (labBookingsAsync.hasValue && labBookingsAsync.value!.isNotEmpty) {
+                    final completedBookings = labBookingsAsync.value!.where((b) => b.status.toUpperCase() == 'COMPLETED').toList();
+                    if (completedBookings.isNotEmpty) {
+                      labSubtitle = 'A lab test report was recently finalized';
+                    }
+                  }
+
                   final activities = [
                     {'title': 'New Doctor Registered', 'subtitle': doctorSubtitle, 'icon': Icons.person_add, 'color': AppTheme.primaryGreen},
-                    {'title': 'Lab Test Completed', 'subtitle': 'CBC test results uploaded for John Doe', 'icon': Icons.check_circle, 'color': AppTheme.primaryGreen},
+                    {'title': 'Lab Test Completed', 'subtitle': labSubtitle, 'icon': Icons.check_circle, 'color': AppTheme.primaryGreen},
                   ];
                   final activity = activities[index];
                   final Color iconColor = activity['color'] as Color;
