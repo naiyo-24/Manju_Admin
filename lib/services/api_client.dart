@@ -9,7 +9,7 @@ class ApiClient {
   ApiClient._internal();
 
   // URLs (To be updated with real backend URLs)
-  static const String baseUrl = 'http://localhost:3000'; // Default fallback
+  static const String baseUrl = 'http://localhost:8000'; // Default fallback
   static const String graphqlEndpoint = '$baseUrl/graphql';
   
   // Clients
