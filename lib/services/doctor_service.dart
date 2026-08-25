@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import '../models/doctor.dart';
@@ -67,6 +68,26 @@ class DoctorService {
   Future<void> deleteDoctor(String id) async {
     try {
       await _dio.delete('/api/admin/doctors/$id');
+    } catch (e) {
+      throw Exception(ApiClient().handleError(e));
+    }
+  }
+
+  Future<Doctor> uploadDoctorImage(String id, Uint8List imageBytes) async {
+    try {
+      final formData = FormData.fromMap({
+        'file': MultipartFile.fromBytes(
+          imageBytes,
+          filename: 'profile.jpg', // A default filename is required by most backends
+        ),
+      });
+
+      final response = await _dio.post(
+        '/api/admin/doctors/$id/upload-image',
+        data: formData,
+      );
+
+      return Doctor.fromJson(response.data as Map<String, dynamic>);
     } catch (e) {
       throw Exception(ApiClient().handleError(e));
     }

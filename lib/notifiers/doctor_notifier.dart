@@ -31,8 +31,13 @@ class DoctorNotifier extends AsyncNotifier<List<Doctor>> {
   Future<void> addDoctor(Doctor newDoctor) async {
     try {
       // Send to backend which generates the real ID and returns it
-      final createdDoctor = await _doctorService.createDoctor(newDoctor);
+      var createdDoctor = await _doctorService.createDoctor(newDoctor);
       
+      // If there is an image, upload it
+      if (newDoctor.profilePicture != null) {
+        createdDoctor = await _doctorService.uploadDoctorImage(createdDoctor.id, newDoctor.profilePicture!);
+      }
+
       // Update local state to reflect the new addition using the REAL backend object
       if (state.hasValue) {
         state = AsyncValue.data([...state.value!, createdDoctor]);
