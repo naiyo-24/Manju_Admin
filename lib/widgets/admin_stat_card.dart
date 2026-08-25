@@ -7,6 +7,7 @@ class AdminStatCard extends StatelessWidget {
   final String value;
   final IconData icon;
   final Color iconColor;
+  final VoidCallback? onTap;
 
   const AdminStatCard({
     super.key,
@@ -14,13 +15,17 @@ class AdminStatCard extends StatelessWidget {
     required this.value,
     required this.icon,
     this.iconColor = AppTheme.primaryGreen,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return NeumorphicCard(
-      padding: 20,
-      child: Row(
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: NeumorphicCard(
+        padding: 20,
+        child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
@@ -71,6 +76,6 @@ class AdminStatCard extends StatelessWidget {
           ),
         ],
       ),
-    );
+    ));
   }
 }

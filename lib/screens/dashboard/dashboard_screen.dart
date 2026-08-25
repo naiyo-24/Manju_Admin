@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../themes/app_theme.dart';
 import '../../widgets/admin_stat_card.dart';
 import '../../widgets/neumorphic_card.dart';
 import '../../providers/doctor_provider.dart';
 import '../../providers/lab_booking_provider.dart';
+import '../../providers/appointment_provider.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -15,9 +17,12 @@ class DashboardScreen extends ConsumerWidget {
     
     final doctorsAsync = ref.watch(doctorProvider);
     final labBookingsAsync = ref.watch(labBookingProvider);
+    final appointmentsAsync = ref.watch(appointmentProvider);
     
     final doctorCount = doctorsAsync.value?.length.toString() ?? '0';
     final labBookingCount = labBookingsAsync.value?.length.toString() ?? '0';
+    
+    final pendingApptCount = appointmentsAsync.value?.where((a) => a.status.toUpperCase() == 'PENDING').length.toString() ?? '0';
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
@@ -56,15 +61,34 @@ class DashboardScreen extends ConsumerWidget {
                 builder: (context, constraints) {
                   final isWide = constraints.maxWidth > 600;
                   return GridView.count(
-                    crossAxisCount: isWide ? 2 : 2,
+                    crossAxisCount: isWide ? 3 : 2,
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     crossAxisSpacing: 16,
                     mainAxisSpacing: 16,
-                    childAspectRatio: isWide ? 4.0 : 1.4,
+                    childAspectRatio: isWide ? 3.0 : 1.4,
                     children: [
-                      AdminStatCard(title: 'Active Doctors', value: doctorCount, icon: Icons.health_and_safety, iconColor: AppTheme.primaryGreen),
-                      AdminStatCard(title: 'Lab Bookings', value: labBookingCount, icon: Icons.science_outlined, iconColor: AppTheme.accentGreen),
+                      AdminStatCard(
+                        title: 'Active Doctors', 
+                        value: doctorCount, 
+                        icon: Icons.health_and_safety, 
+                        iconColor: AppTheme.primaryGreen,
+                        onTap: () => context.go('/doctors'),
+                      ),
+                      AdminStatCard(
+                        title: 'Pending Appointments', 
+                        value: pendingApptCount, 
+                        icon: Icons.calendar_today, 
+                        iconColor: AppTheme.primaryGreen,
+                        onTap: () => context.go('/appointments'),
+                      ),
+                      AdminStatCard(
+                        title: 'Lab Bookings', 
+                        value: labBookingCount, 
+                        icon: Icons.science_outlined, 
+                        iconColor: AppTheme.accentGreen,
+                        onTap: () => context.go('/lab-bookings'),
+                      ),
                     ],
                   );
                 },
