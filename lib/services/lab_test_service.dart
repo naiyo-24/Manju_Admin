@@ -54,7 +54,7 @@ class LabTestService {
 
   Future<void> updateLabTest(LabTest test) async {
     try {
-      await _dio.put(
+      await _dio.patch(
         '/api/admin/lab-catalog/${test.id}',
         data: test.toJson(),
       );
