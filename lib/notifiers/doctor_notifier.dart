@@ -30,16 +30,12 @@ class DoctorNotifier extends AsyncNotifier<List<Doctor>> {
 
   Future<void> addDoctor(Doctor newDoctor) async {
     try {
-      // Create a unique ID for the doctor if not provided
-      final doctorToSave = newDoctor.id.isEmpty 
-          ? newDoctor.copyWith(id: _uuid.v4()) 
-          : newDoctor;
-          
-      await _doctorService.createDoctor(doctorToSave);
+      // Send to backend which generates the real ID and returns it
+      final createdDoctor = await _doctorService.createDoctor(newDoctor);
       
-      // Update local state to reflect the new addition immediately
+      // Update local state to reflect the new addition using the REAL backend object
       if (state.hasValue) {
-        state = AsyncValue.data([...state.value!, doctorToSave]);
+        state = AsyncValue.data([...state.value!, createdDoctor]);
       }
     } catch (e) {
       debugPrint('Error adding doctor: $e');
