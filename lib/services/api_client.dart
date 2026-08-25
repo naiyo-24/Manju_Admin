@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 class ApiClient {
   // Singleton instance
@@ -31,9 +32,16 @@ class ApiClient {
         if (_authToken != null) 'Authorization': 'Bearer $_authToken',
       },
     ));
-    
-    // Add logging interceptor for Dio
-    _dio.interceptors.add(LogInterceptor(responseBody: true, requestBody: true));
+    // Add pretty logging interceptor for Dio
+    _dio.interceptors.add(PrettyDioLogger(
+      requestHeader: true,
+      requestBody: true,
+      responseBody: true,
+      responseHeader: false,
+      error: true,
+      compact: true,
+      maxWidth: 90,
+    ));
 
     // 2. Initialize GraphQL Client
     final HttpLink httpLink = HttpLink(graphqlEndpoint);
