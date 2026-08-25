@@ -18,6 +18,7 @@ class _AddLabBookingDialogState extends ConsumerState<AddLabBookingDialog> {
   final _formKey = GlobalKey<FormState>();
   
   final nameController = TextEditingController();
+  final userIdController = TextEditingController();
   final ageController = TextEditingController();
   final genderController = TextEditingController();
   final notesController = TextEditingController();
@@ -101,6 +102,8 @@ class _AddLabBookingDialogState extends ConsumerState<AddLabBookingDialog> {
                     // Patient Details
                     const Text('Patient Details', style: TextStyle(fontWeight: FontWeight.bold, color: AppTheme.primaryGreen)),
                     const SizedBox(height: 12),
+                    _buildTextField('Phone Number / User ID (Required)', Icons.phone, controller: userIdController),
+                    const SizedBox(height: 16),
                     _buildTextField('Patient Name (Optional)', Icons.person, controller: nameController),
                     const SizedBox(height: 16),
                     Row(
@@ -289,11 +292,18 @@ class _AddLabBookingDialogState extends ConsumerState<AddLabBookingDialog> {
                           return;
                         }
 
+                        if (userIdController.text.trim().isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Please enter a User ID or Phone Number')),
+                          );
+                          return;
+                        }
+
                         setState(() => _isSubmitting = true);
                         // Submit logic
                         final booking = LabBooking(
                           id: '', // generated in notifier
-                          userId: 'admin-mock-user',
+                          userId: userIdController.text.trim(),
                           paymentMethod: 'COD',
                           bookedItems: cartItems,
                           status: selectedStatus,

@@ -99,10 +99,6 @@ class DashboardScreen extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text('Recent Activity', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
-                  TextButton(
-                    onPressed: () {}, 
-                    child: const Text('View All', style: TextStyle(color: AppTheme.accentGreen, fontWeight: FontWeight.bold))
-                  )
                 ],
               ),
               const SizedBox(height: 12),
@@ -247,18 +243,6 @@ class DashboardScreen extends ConsumerWidget {
                 style: TextStyle(color: Colors.white.withValues(alpha: 0.9), fontSize: 16, fontWeight: FontWeight.w500),
               ),
               const SizedBox(height: 24),
-              ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: AppTheme.promoGradientEnd,
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  elevation: 0,
-                ),
-                onPressed: () {},
-                icon: const Icon(Icons.flash_on),
-                label: const Text('Generate Daily Report', style: TextStyle(fontWeight: FontWeight.bold)),
-              )
             ],
           ),
         ],

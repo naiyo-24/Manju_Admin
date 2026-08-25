@@ -25,6 +25,7 @@ class _AddAppointmentDialogState extends ConsumerState<AddAppointmentDialog> {
   String? selectedGender;
   
   final nameController = TextEditingController();
+  final userIdController = TextEditingController();
   final ageController = TextEditingController();
   final notesController = TextEditingController();
 
@@ -201,6 +202,8 @@ class _AddAppointmentDialogState extends ConsumerState<AddAppointmentDialog> {
               const SizedBox(height: 12),
               
               // Patient Details
+              _buildTextField('Phone Number / User ID (Required)', Icons.phone, controller: userIdController, keyboardType: TextInputType.phone),
+              const SizedBox(height: 16),
               _buildTextField('Patient Name (Optional)', Icons.person, controller: nameController),
               const SizedBox(height: 16),
               Row(
@@ -301,9 +304,14 @@ class _AddAppointmentDialogState extends ConsumerState<AddAppointmentDialog> {
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                     ),
                     onPressed: () {
+                      if (userIdController.text.trim().isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please enter a User ID or Phone Number')));
+                        return;
+                      }
+                      
                       final newAppt = Appointment(
                         id: '',
-                        userId: 'dummy_user_id',
+                        userId: userIdController.text.trim(),
                         doctorId: selectedDoctorId ?? 'unknown_doctor',
                         preferredDate: selectedDate ?? DateTime.now(),
                         status: selectedStatus,
