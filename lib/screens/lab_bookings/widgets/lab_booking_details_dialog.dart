@@ -170,13 +170,11 @@ class _LabBookingDetailsDialogState extends ConsumerState<LabBookingDetailsDialo
                           selectedStatus = 'REPORT_READY';
                         });
                         
-                        // Automatically update backend
-                        ref.read(labBookingProvider.notifier).updateLabBooking(
-                          widget.booking.copyWith(
-                            status: 'REPORT_READY',
-                            reportFileName: fileName,
-                            reportBytes: fileBytes,
-                          ),
+                        // Automatically upload to backend
+                        ref.read(labBookingProvider.notifier).uploadReport(
+                          widget.booking.id,
+                          bytes,
+                          result.name,
                         );
                       }
                     },
