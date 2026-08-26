@@ -312,9 +312,9 @@ class _AddAppointmentDialogState extends ConsumerState<AddAppointmentDialog> {
                         return;
                       }
                       
-                      // Check if it's a valid UUID. If not, generate one and pass input as phone.
+                      // Check if it's a valid UUID. If not, use the test admin UUID and pass input as phone.
                       final isUuid = RegExp(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$').hasMatch(inputUserId);
-                      final finalUserId = isUuid ? inputUserId : const Uuid().v4();
+                      final finalUserId = isUuid ? inputUserId : 'd6db2112-796f-42db-898a-b43ca519be92';
                       
                       final newAppt = Appointment(
                         id: '',

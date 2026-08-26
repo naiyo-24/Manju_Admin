@@ -5,7 +5,7 @@ import '../models/appointment.dart';
 import '../services/appointment_service.dart';
 
 class AppointmentNotifier extends AsyncNotifier<List<Appointment>> {
-  late final AppointmentService _service;
+  late AppointmentService _service;
   final _uuid = const Uuid();
 
   @override
