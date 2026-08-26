@@ -22,7 +22,7 @@ class DashboardScreen extends ConsumerWidget {
     final doctorCount = doctorsAsync.value?.length.toString() ?? '0';
     final labBookingCount = labBookingsAsync.value?.length.toString() ?? '0';
     
-    final pendingApptCount = appointmentsAsync.value?.where((a) => a.status.toUpperCase() == 'PENDING').length.toString() ?? '0';
+    final pendingApptCount = appointmentsAsync.value?.where((a) => a.status.toUpperCase() == 'PENDING_CONFIRMATION').length.toString() ?? '0';
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
