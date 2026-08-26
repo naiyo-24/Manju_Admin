@@ -54,4 +54,35 @@ class Appointment {
       createdAt: createdAt ?? this.createdAt,
     );
   }
+
+  factory Appointment.fromJson(Map<String, dynamic> json) {
+    return Appointment(
+      id: json['id'] as String,
+      userId: json['userId'] as String? ?? json['user_id'] as String? ?? '',
+      doctorId: (json['doctor'] != null && json['doctor']['id'] != null)
+          ? json['doctor']['id'] as String
+          : json['doctorId'] as String? ?? json['doctor_id'] as String? ?? '',
+      status: json['status'] as String? ?? 'PENDING_CONFIRMATION',
+      preferredDate: json['preferredDate'] != null 
+          ? DateTime.parse(json['preferredDate']) 
+          : (json['preferred_date'] != null ? DateTime.parse(json['preferred_date']) : DateTime.now()),
+      formDetails: json['formDetails'] as Map<String, dynamic>? ?? json['form_details'] as Map<String, dynamic>?,
+      prescriptionUrl: json['prescriptionUrl'] as String? ?? json['prescription_url'] as String?,
+      createdAt: json['createdAt'] != null 
+          ? DateTime.parse(json['createdAt']) 
+          : (json['created_at'] != null ? DateTime.parse(json['created_at']) : DateTime.now()),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      if (id.isNotEmpty) 'id': id,
+      'user_id': userId,
+      'doctor_id': doctorId,
+      'status': status,
+      'preferred_date': preferredDate.toIso8601String().split('T')[0],
+      if (formDetails != null) 'form_details': formDetails,
+      // prescriptionUrl is handled via separate upload API
+    };
+  }
 }

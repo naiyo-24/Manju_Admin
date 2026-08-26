@@ -21,7 +21,7 @@ class _AddAppointmentDialogState extends ConsumerState<AddAppointmentDialog> {
   DateTime? selectedDate = DateTime.now();
   Uint8List? fileBytes;
   String? fileName;
-  String selectedStatus = 'pending';
+  String selectedStatus = 'PENDING_CONFIRMATION';
   String? selectedGender;
   
   final nameController = TextEditingController();
@@ -186,9 +186,10 @@ class _AddAppointmentDialogState extends ConsumerState<AddAppointmentDialog> {
                       value: selectedStatus,
                       hint: '--Select Status--',
                       items: const [
-                        DropdownMenuItem(value: 'pending', child: Text('Pending')),
-                        DropdownMenuItem(value: 'confirmed', child: Text('Confirmed')),
+                        DropdownMenuItem(value: 'PENDING_CONFIRMATION', child: Text('Pending Confirmation')),
+                        DropdownMenuItem(value: 'CONFIRMED', child: Text('Confirmed')),
                         DropdownMenuItem(value: 'COMPLETED', child: Text('Completed')),
+                        DropdownMenuItem(value: 'CANCELLED', child: Text('Cancelled')),
                       ],
                       onChanged: (val) {
                         if (val != null) setState(() => selectedStatus = val);

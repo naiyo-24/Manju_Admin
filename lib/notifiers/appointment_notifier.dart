@@ -16,14 +16,10 @@ class AppointmentNotifier extends AsyncNotifier<List<Appointment>> {
 
   Future<void> addAppointment(Appointment newAppt) async {
     try {
-      final apptToSave = newAppt.id.isEmpty 
-          ? newAppt.copyWith(id: _uuid.v4()) 
-          : newAppt;
-          
-      await _service.createAppointment(apptToSave);
+      final createdAppt = await _service.createAppointment(newAppt);
       
       if (state.hasValue) {
-        state = AsyncValue.data([...state.value!, apptToSave]);
+        state = AsyncValue.data([...state.value!, createdAppt]);
       }
     } catch (e) {
       debugPrint('Error adding appointment: $e');
@@ -32,7 +28,7 @@ class AppointmentNotifier extends AsyncNotifier<List<Appointment>> {
 
   Future<void> updateAppointment(Appointment appt) async {
     try {
-      await _service.updateAppointment(appt);
+      await _service.updateAppointmentStatus(appt.id, appt.status);
       if (state.hasValue) {
         final updatedList = state.value!.map((a) {
           return a.id == appt.id ? appt : a;

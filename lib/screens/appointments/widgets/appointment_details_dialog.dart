@@ -88,10 +88,10 @@ class _AppointmentDetailsDialogState extends ConsumerState<AppointmentDetailsDia
                   child: CustomDropdown<String>(
                     value: selectedStatus,
                     hint: '--Select Status--',
-                    items: ['PENDING', 'CONFIRMED', 'COMPLETED']
+                    items: ['PENDING_CONFIRMATION', 'CONFIRMED', 'AGENT_ASSIGNED', 'REPORT_READY', 'COMPLETED', 'CANCELLED']
                         .map((s) => DropdownMenuItem(
                               value: s,
-                              child: Text(s),
+                              child: Text(s.replaceAll('_', ' ')),
                             ))
                         .toList(),
                     onChanged: (val) {
