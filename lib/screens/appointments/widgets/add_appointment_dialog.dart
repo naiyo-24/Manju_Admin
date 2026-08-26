@@ -312,13 +312,9 @@ class _AddAppointmentDialogState extends ConsumerState<AddAppointmentDialog> {
                         return;
                       }
                       
-                      // Check if it's a valid UUID. If not, use the test admin UUID and pass input as phone.
-                      final isUuid = RegExp(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$').hasMatch(inputUserId);
-                      final finalUserId = isUuid ? inputUserId : 'd6db2112-796f-42db-898a-b43ca519be92';
-                      
                       final newAppt = Appointment(
                         id: '',
-                        userId: finalUserId,
+                        userId: inputUserId,
                         doctorId: selectedDoctorId ?? 'unknown_doctor',
                         preferredDate: selectedDate ?? DateTime.now(),
                         status: selectedStatus,
@@ -327,13 +323,15 @@ class _AddAppointmentDialogState extends ConsumerState<AddAppointmentDialog> {
                           'age': ageController.text.trim(),
                           'gender': selectedGender ?? '',
                           'notes': notesController.text.trim(),
-                          if (!isUuid) 'phone': inputUserId,
                         },
                         prescriptionBytes: fileBytes,
                         prescriptionFileName: fileName,
                       );
                       
-                      ref.read(appointmentProvider.notifier).addAppointment(newAppt);
+                      ref.read(appointmentProvider.notifier).addAppointment(
+                        newAppt, 
+                        patientName: nameController.text.trim(),
+                      );
                       Navigator.pop(context);
                     },
                     child: const Text('Save Booking', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),

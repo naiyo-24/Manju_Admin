@@ -14,9 +14,18 @@ class AppointmentNotifier extends AsyncNotifier<List<Appointment>> {
     return await _service.getAppointments();
   }
 
-  Future<void> addAppointment(Appointment newAppt) async {
+  Future<void> addAppointment(Appointment newAppt, {String? patientName}) async {
     try {
-      final createdAppt = await _service.createAppointment(newAppt);
+      String finalUserId = newAppt.userId;
+      final isUuid = RegExp(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$').hasMatch(finalUserId);
+      
+      // If the admin entered a phone number instead of a UUID, create a patient profile first
+      if (!isUuid) {
+        finalUserId = await _service.createGuestUser(patientName ?? 'Walk-in Patient', finalUserId);
+      }
+      
+      final apptToSave = newAppt.copyWith(userId: finalUserId);
+      final createdAppt = await _service.createAppointment(apptToSave);
       
       if (state.hasValue) {
         state = AsyncValue.data([...state.value!, createdAppt]);

@@ -60,6 +60,22 @@ class AppointmentService {
     }
   }
 
+  Future<String> createGuestUser(String name, String phone) async {
+    try {
+      final response = await _dio.post(
+        '/api/users/create',
+        data: {
+          'role': 'USER',
+          'name': name.isEmpty ? 'Walk-in Patient' : name,
+          'phone': phone,
+        },
+      );
+      return response.data['id'] as String;
+    } catch (e) {
+      throw Exception(ApiClient().handleError(e));
+    }
+  }
+
   Future<void> updateAppointmentStatus(String id, String newStatus) async {
     try {
       await _dio.patch(
