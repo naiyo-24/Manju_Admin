@@ -20,7 +20,7 @@ class DashboardScreen extends ConsumerWidget {
     final appointmentsAsync = ref.watch(appointmentProvider);
     
     final doctorCount = doctorsAsync.value?.length.toString() ?? '0';
-    final labBookingCount = labBookingsAsync.value?.length.toString() ?? '0';
+    final labBookingCount = labBookingsAsync.value?.where((b) => b.status.toUpperCase() == 'PENDING_CONFIRMATION').length.toString() ?? '0';
     
     final pendingApptCount = appointmentsAsync.value?.where((a) => a.status.toUpperCase() == 'PENDING_CONFIRMATION').length.toString() ?? '0';
     return Scaffold(
@@ -83,7 +83,7 @@ class DashboardScreen extends ConsumerWidget {
                         onTap: () => context.go('/appointments'),
                       ),
                       AdminStatCard(
-                        title: 'Lab Bookings', 
+                        title: 'Pending Lab Bookings', 
                         value: labBookingCount, 
                         icon: Icons.science_outlined, 
                         iconColor: AppTheme.accentGreen,
