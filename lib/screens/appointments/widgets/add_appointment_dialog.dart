@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:uuid/uuid.dart';
 import '../../../themes/app_theme.dart';
 import '../../../models/appointment.dart';
 import '../../../providers/appointment_provider.dart';
@@ -305,14 +306,19 @@ class _AddAppointmentDialogState extends ConsumerState<AddAppointmentDialog> {
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                     ),
                     onPressed: () {
-                      if (userIdController.text.trim().isEmpty) {
+                      final inputUserId = userIdController.text.trim();
+                      if (inputUserId.isEmpty) {
                         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please enter a User ID or Phone Number')));
                         return;
                       }
                       
+                      // Check if it's a valid UUID. If not, generate one and pass input as phone.
+                      final isUuid = RegExp(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$').hasMatch(inputUserId);
+                      final finalUserId = isUuid ? inputUserId : const Uuid().v4();
+                      
                       final newAppt = Appointment(
                         id: '',
-                        userId: userIdController.text.trim(),
+                        userId: finalUserId,
                         doctorId: selectedDoctorId ?? 'unknown_doctor',
                         preferredDate: selectedDate ?? DateTime.now(),
                         status: selectedStatus,
@@ -321,6 +327,7 @@ class _AddAppointmentDialogState extends ConsumerState<AddAppointmentDialog> {
                           'age': ageController.text.trim(),
                           'gender': selectedGender ?? '',
                           'notes': notesController.text.trim(),
+                          if (!isUuid) 'phone': inputUserId,
                         },
                         prescriptionBytes: fileBytes,
                         prescriptionFileName: fileName,
