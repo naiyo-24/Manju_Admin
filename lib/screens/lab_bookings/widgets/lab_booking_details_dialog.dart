@@ -83,7 +83,7 @@ class _LabBookingDetailsDialogState extends ConsumerState<LabBookingDetailsDialo
                   child: CustomDropdown<String>(
                     value: selectedStatus,
                     hint: '--Select Status--',
-                    items: ['PENDING_CONFIRMATION', 'SAMPLE_COLLECTED', 'REPORT_READY']
+                    items: ['PENDING_CONFIRMATION', 'AGENT_ASSIGNED', 'REPORT_READY']
                         .map((s) => DropdownMenuItem(
                               value: s,
                               child: Text(

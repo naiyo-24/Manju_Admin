@@ -122,7 +122,7 @@ class LabBookingsScreen extends ConsumerWidget {
                                 decoration: BoxDecoration(
                                   color: booking.status.toUpperCase() == 'REPORT_READY' 
                                       ? AppTheme.accentGreen.withValues(alpha: 0.2) 
-                                      : (booking.status.toUpperCase() == 'SAMPLE_COLLECTED' 
+                                      : (booking.status.toUpperCase() == 'AGENT_ASSIGNED' 
                                           ? Colors.blue.withValues(alpha: 0.2)
                                           : AppTheme.pricePink.withValues(alpha: 0.2)),
                                   borderRadius: BorderRadius.circular(12),
@@ -132,7 +132,7 @@ class LabBookingsScreen extends ConsumerWidget {
                                   style: TextStyle(
                                     color: booking.status.toUpperCase() == 'REPORT_READY' 
                                         ? AppTheme.primaryGreen 
-                                        : (booking.status.toUpperCase() == 'SAMPLE_COLLECTED' 
+                                        : (booking.status.toUpperCase() == 'AGENT_ASSIGNED' 
                                             ? Colors.blue[700]
                                             : AppTheme.pricePink),
                                     fontWeight: FontWeight.bold,

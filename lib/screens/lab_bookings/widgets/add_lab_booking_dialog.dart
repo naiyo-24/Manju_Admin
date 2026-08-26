@@ -164,7 +164,7 @@ class _AddLabBookingDialogState extends ConsumerState<AddLabBookingDialog> {
                     CustomDropdown<String>(
                       value: selectedStatus,
                       hint: '--Select Status--',
-                      items: ['PENDING_CONFIRMATION', 'SAMPLE_COLLECTED', 'REPORT_READY']
+                      items: ['PENDING_CONFIRMATION', 'AGENT_ASSIGNED', 'REPORT_READY']
                           .map((s) => DropdownMenuItem(value: s, child: Text(s.replaceAll('_', ' '))))
                           .toList(),
                       onChanged: (val) {
