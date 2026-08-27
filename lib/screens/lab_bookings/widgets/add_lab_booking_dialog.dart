@@ -300,29 +300,33 @@ class _AddLabBookingDialogState extends ConsumerState<AddLabBookingDialog> {
                         }
 
                         setState(() => _isSubmitting = true);
-                        // Submit logic
-                        final booking = LabBooking(
-                          id: '', // generated in notifier
-                          userId: userIdController.text.trim(),
-                          paymentMethod: 'COD',
-                          bookedItems: cartItems,
-                          status: selectedStatus,
-                          totalAmount: totalAmount,
-                          preferredDate: selectedDate,
-                          createdAt: DateTime.now(),
-                          formDetails: {
-                            'patient_name': nameController.text,
-                            'age': ageController.text,
-                            'gender': genderController.text,
-                            'notes': notesController.text,
-                          },
-                        );
-                        
-                        final nav = Navigator.of(context);
-                        await ref.read(labBookingProvider.notifier).addLabBooking(booking);
-                        if (mounted) nav.pop();
+                        try {
+                          final booking = LabBooking(
+                            id: '', // generated in notifier
+                            userId: userIdController.text.trim(),
+                            paymentMethod: 'COD',
+                            bookedItems: cartItems,
+                            status: selectedStatus,
+                            totalAmount: totalAmount,
+                            preferredDate: selectedDate,
+                            createdAt: DateTime.now(),
+                            formDetails: {
+                              'patient_name': nameController.text,
+                              'age': ageController.text,
+                              'gender': genderController.text,
+                              'notes': notesController.text,
+                            },
+                          );
+                          
+                          await ref.read(labBookingProvider.notifier).addLabBooking(booking);
+                          if (context.mounted) Navigator.pop(context);
+                        } finally {
+                          if (context.mounted) setState(() => _isSubmitting = false);
+                        }
                       },
-                      child: const Text('Create Lab Booking', style: TextStyle(fontWeight: FontWeight.bold)),
+                      child: _isSubmitting
+                          ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                          : const Text('Create Lab Booking', style: TextStyle(fontWeight: FontWeight.bold)),
                     ),
                   ),
                 ],

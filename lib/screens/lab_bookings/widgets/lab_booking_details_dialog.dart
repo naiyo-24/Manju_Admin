@@ -24,6 +24,7 @@ class _LabBookingDetailsDialogState extends ConsumerState<LabBookingDetailsDialo
   late String selectedStatus;
   Uint8List? fileBytes;
   String? fileName;
+  bool _isDeleting = false;
 
   @override
   void initState() {
@@ -252,12 +253,19 @@ class _LabBookingDetailsDialogState extends ConsumerState<LabBookingDetailsDialo
                                 foregroundColor: Colors.white,
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                               ),
-                              onPressed: () {
-                                ref.read(labBookingProvider.notifier).deleteLabBooking(widget.booking.id);
-                                Navigator.pop(ctx);
-                                Navigator.pop(context);
+                              onPressed: _isDeleting ? null : () async {
+                                setState(() => _isDeleting = true);
+                                try {
+                                  await ref.read(labBookingProvider.notifier).deleteLabBooking(widget.booking.id);
+                                  if (ctx.mounted) Navigator.pop(ctx);
+                                  if (context.mounted) Navigator.pop(context);
+                                } finally {
+                                  if (context.mounted) setState(() => _isDeleting = false);
+                                }
                               },
-                              child: const Text('Yes, Delete', style: TextStyle(fontWeight: FontWeight.bold)),
+                              child: _isDeleting
+                                  ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                                  : const Text('Yes, Delete', style: TextStyle(fontWeight: FontWeight.bold)),
                             ),
                           ],
                         ),

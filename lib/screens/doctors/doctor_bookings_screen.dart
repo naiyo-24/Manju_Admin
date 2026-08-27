@@ -8,6 +8,7 @@ import '../../services/api_client.dart';
 import '../../themes/app_theme.dart';
 import '../../widgets/admin_stat_card.dart';
 import '../../widgets/neumorphic_card.dart';
+import '../../widgets/neumorphic_loader.dart';
 import '../../providers/doctor_provider.dart';
 import '../../providers/appointment_provider.dart';
 import 'widgets/add_doctor_dialog.dart';
@@ -125,7 +126,7 @@ class DoctorBookingsScreen extends ConsumerWidget {
             const SizedBox(height: 16),
             Expanded(
               child: doctorsAsync.when(
-                loading: () => const Center(child: CircularProgressIndicator(color: AppTheme.primaryGreen)),
+                loading: () => const NeumorphicLoader(),
                 error: (err, stack) => Center(child: Text('Error: $err', style: const TextStyle(color: Colors.red))),
                 data: (doctors) {
                   if (doctors.isEmpty) {
@@ -167,7 +168,7 @@ class DoctorBookingsScreen extends ConsumerWidget {
                             child: ListTile(
                               leading: CircleAvatar(
                                 radius: 40,
-                                backgroundColor: AppTheme.primaryGreen.withOpacity(0.1),
+                                foregroundColor: AppTheme.primaryGreen.withValues(alpha: 0.1),
                                 backgroundImage: doctor.imageUrl != null 
                                     ? NetworkImage('${ApiClient.baseUrl}${doctor.imageUrl!}') as ImageProvider
                                     : (doctor.profilePicture != null 

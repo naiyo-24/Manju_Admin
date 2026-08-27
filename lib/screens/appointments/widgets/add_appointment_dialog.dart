@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:uuid/uuid.dart';
+
 import '../../../themes/app_theme.dart';
 import '../../../models/appointment.dart';
 import '../../../providers/appointment_provider.dart';
@@ -29,6 +29,7 @@ class _AddAppointmentDialogState extends ConsumerState<AddAppointmentDialog> {
   final userIdController = TextEditingController();
   final ageController = TextEditingController();
   final notesController = TextEditingController();
+  bool _isLoading = false;
 
   Widget _buildTextField(String hint, IconData icon, {int maxLines = 1, TextEditingController? controller, TextInputType? keyboardType}) {
     return Container(
@@ -305,36 +306,43 @@ class _AddAppointmentDialogState extends ConsumerState<AddAppointmentDialog> {
                       shadowColor: AppTheme.primaryGreen.withValues(alpha: 0.5),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                     ),
-                    onPressed: () {
+                    onPressed: _isLoading ? null : () async {
                       final inputUserId = userIdController.text.trim();
                       if (inputUserId.isEmpty) {
                         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please enter a User ID or Phone Number')));
                         return;
                       }
                       
-                      final newAppt = Appointment(
-                        id: '',
-                        userId: inputUserId,
-                        doctorId: selectedDoctorId ?? 'unknown_doctor',
-                        preferredDate: selectedDate ?? DateTime.now(),
-                        status: selectedStatus,
-                        formDetails: {
-                          'patient_name': nameController.text.trim(),
-                          'age': ageController.text.trim(),
-                          'gender': selectedGender ?? '',
-                          'notes': notesController.text.trim(),
-                        },
-                        prescriptionBytes: fileBytes,
-                        prescriptionFileName: fileName,
-                      );
-                      
-                      ref.read(appointmentProvider.notifier).addAppointment(
-                        newAppt, 
-                        patientName: nameController.text.trim(),
-                      );
-                      Navigator.pop(context);
+                      setState(() => _isLoading = true);
+                      try {
+                        final newAppt = Appointment(
+                          id: '',
+                          userId: inputUserId,
+                          doctorId: selectedDoctorId ?? 'unknown_doctor',
+                          preferredDate: selectedDate ?? DateTime.now(),
+                          status: selectedStatus,
+                          formDetails: {
+                            'patient_name': nameController.text.trim(),
+                            'age': ageController.text.trim(),
+                            'gender': selectedGender ?? '',
+                            'notes': notesController.text.trim(),
+                          },
+                          prescriptionBytes: fileBytes,
+                          prescriptionFileName: fileName,
+                        );
+                        
+                        await ref.read(appointmentProvider.notifier).addAppointment(
+                          newAppt, 
+                          patientName: nameController.text.trim(),
+                        );
+                        if (context.mounted) Navigator.pop(context);
+                      } finally {
+                        if (context.mounted) setState(() => _isLoading = false);
+                      }
                     },
-                    child: const Text('Save Booking', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    child: _isLoading 
+                        ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                        : const Text('Save Booking', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                   ),
                 ],
               ),

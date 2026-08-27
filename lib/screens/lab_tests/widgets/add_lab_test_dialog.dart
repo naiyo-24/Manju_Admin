@@ -264,27 +264,31 @@ class _AddLabTestDialogState extends ConsumerState<AddLabTestDialog> {
                         }
                         
                         setState(() => _isSubmitting = true);
-                        
-                        final test = LabTest(
-                          id: widget.existingTest?.id ?? '',
-                          type: widget.existingTest?.type ?? (widget.isPackage ? 'PACKAGE' : 'SINGLE_TEST'),
-                          title: _titleController.text.trim(),
-                          price: double.parse(_priceController.text.trim()),
-                          turnaroundTime: _turnaroundController.text.trim(),
-                          includes: _includes,
-                        );
-                        
-                        final nav = Navigator.of(context);
-                        if (widget.existingTest != null) {
-                          await ref.read(labTestProvider.notifier).updateLabTest(test);
-                        } else {
-                          await ref.read(labTestProvider.notifier).addLabTest(test);
+                        try {
+                          final test = LabTest(
+                            id: widget.existingTest?.id ?? '',
+                            type: widget.existingTest?.type ?? (widget.isPackage ? 'PACKAGE' : 'SINGLE_TEST'),
+                            title: _titleController.text.trim(),
+                            price: double.parse(_priceController.text.trim()),
+                            turnaroundTime: _turnaroundController.text.trim(),
+                            includes: _includes,
+                          );
+                          
+                          if (widget.existingTest != null) {
+                            await ref.read(labTestProvider.notifier).updateLabTest(test);
+                          } else {
+                            await ref.read(labTestProvider.notifier).addLabTest(test);
+                          }
+                          
+                          if (context.mounted) Navigator.pop(context);
+                        } finally {
+                          if (context.mounted) setState(() => _isSubmitting = false);
                         }
-                        
-                        if (mounted) nav.pop();
                       }
                     },
-                    child: Text(widget.existingTest != null ? 'Update Catalog' : 'Save to Catalog', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    child: _isSubmitting
+                        ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                        : Text(widget.existingTest != null ? 'Update Catalog' : 'Save to Catalog', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                   ),
                 ],
               ),

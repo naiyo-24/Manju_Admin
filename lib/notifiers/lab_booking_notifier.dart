@@ -1,12 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:uuid/uuid.dart';
+
 import '../models/lab_booking.dart';
 import '../services/lab_booking_service.dart';
 
 class LabBookingNotifier extends AsyncNotifier<List<LabBooking>> {
   late LabBookingService _service;
-  final _uuid = const Uuid();
+
 
   @override
   Future<List<LabBooking>> build() async {

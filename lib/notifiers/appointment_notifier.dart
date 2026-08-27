@@ -1,12 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:uuid/uuid.dart';
+
 import '../models/appointment.dart';
 import '../services/appointment_service.dart';
 
 class AppointmentNotifier extends AsyncNotifier<List<Appointment>> {
   late AppointmentService _service;
-  final _uuid = const Uuid();
+
 
   @override
   Future<List<Appointment>> build() async {

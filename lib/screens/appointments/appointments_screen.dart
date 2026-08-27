@@ -5,6 +5,7 @@ import '../../themes/app_theme.dart';
 import '../../widgets/admin_stat_card.dart';
 import '../../widgets/neumorphic_card.dart';
 import '../../models/doctor.dart';
+import '../../widgets/neumorphic_loader.dart';
 import '../../providers/appointment_provider.dart';
 import '../../providers/doctor_provider.dart';
 import 'widgets/add_appointment_dialog.dart';
@@ -80,7 +81,7 @@ class AppointmentsScreen extends ConsumerWidget {
             const SizedBox(height: 16),
             Expanded(
               child: apptsAsync.when(
-                loading: () => const Center(child: CircularProgressIndicator(color: AppTheme.primaryGreen)),
+                loading: () => const NeumorphicLoader(),
                 error: (err, stack) => Center(child: Text('Error: $err', style: const TextStyle(color: Colors.red))),
                 data: (appts) {
                   if (appts.isEmpty) {

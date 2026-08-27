@@ -8,6 +8,7 @@ import '../../themes/app_theme.dart';
 import '../../models/lab_test.dart';
 import '../../providers/lab_test_provider.dart';
 import 'widgets/add_lab_test_dialog.dart';
+import '../../widgets/neumorphic_loader.dart';
 
 class LabTestsScreen extends ConsumerWidget {
   const LabTestsScreen({super.key});
@@ -205,7 +206,7 @@ class LabTestsScreen extends ConsumerWidget {
       body: Padding(
         padding: AppTheme.defaultScreenPadding,
         child: labTestsAsync.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
+          loading: () => const NeumorphicLoader(),
           error: (error, stack) => Center(child: Text('Error: $error')),
           data: (tests) {
             if (tests.isEmpty) {

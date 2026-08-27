@@ -23,6 +23,7 @@ class AppointmentDetailsDialog extends ConsumerStatefulWidget {
 
 class _AppointmentDetailsDialogState extends ConsumerState<AppointmentDetailsDialog> {
   late String selectedStatus;
+  bool _isDeleting = false;
 
   @override
   void initState() {
@@ -168,12 +169,19 @@ class _AppointmentDetailsDialogState extends ConsumerState<AppointmentDetailsDia
                                 foregroundColor: Colors.white,
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                               ),
-                              onPressed: () {
-                                ref.read(appointmentProvider.notifier).deleteAppointment(widget.appt.id);
-                                Navigator.pop(ctx);
-                                Navigator.pop(context);
+                              onPressed: _isDeleting ? null : () async {
+                                setState(() => _isDeleting = true);
+                                try {
+                                  await ref.read(appointmentProvider.notifier).deleteAppointment(widget.appt.id);
+                                  if (ctx.mounted) Navigator.pop(ctx);
+                                  if (context.mounted) Navigator.pop(context);
+                                } finally {
+                                  if (context.mounted) setState(() => _isDeleting = false);
+                                }
                               },
-                              child: const Text('Yes, Delete', style: TextStyle(fontWeight: FontWeight.bold)),
+                              child: _isDeleting 
+                                  ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                                  : const Text('Yes, Delete', style: TextStyle(fontWeight: FontWeight.bold)),
                             ),
                           ],
                         ),

@@ -1,12 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:uuid/uuid.dart';
+
 import '../models/lab_test.dart';
 import '../services/lab_test_service.dart';
 
 class LabTestNotifier extends AsyncNotifier<List<LabTest>> {
   late final LabTestService _service;
-  final _uuid = const Uuid();
+
 
   @override
   Future<List<LabTest>> build() async {

@@ -1,12 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:uuid/uuid.dart';
+
 import '../models/doctor.dart';
 import '../services/doctor_service.dart';
 
 class DoctorNotifier extends AsyncNotifier<List<Doctor>> {
   late final DoctorService _doctorService;
-  final _uuid = const Uuid();
+
 
   @override
   Future<List<Doctor>> build() async {

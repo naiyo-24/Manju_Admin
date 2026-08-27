@@ -7,6 +7,7 @@ import '../../widgets/neumorphic_card.dart';
 import '../../providers/lab_booking_provider.dart';
 import 'widgets/add_lab_booking_dialog.dart';
 import 'widgets/lab_booking_details_dialog.dart';
+import '../../widgets/neumorphic_loader.dart';
 
 class LabBookingsScreen extends ConsumerWidget {
   const LabBookingsScreen({super.key});
@@ -72,7 +73,7 @@ class LabBookingsScreen extends ConsumerWidget {
             const SizedBox(height: 16),
             Expanded(
               child: labBookingsAsync.when(
-                loading: () => const Center(child: CircularProgressIndicator(color: AppTheme.primaryGreen)),
+                loading: () => const NeumorphicLoader(),
                 error: (err, stack) => Center(child: Text('Error: $err', style: const TextStyle(color: Colors.red))),
                 data: (bookings) {
                   if (bookings.isEmpty) {

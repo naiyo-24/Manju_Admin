@@ -7,6 +7,7 @@ import '../../widgets/neumorphic_card.dart';
 import '../../providers/doctor_provider.dart';
 import '../../providers/lab_booking_provider.dart';
 import '../../providers/appointment_provider.dart';
+import '../../widgets/neumorphic_loader.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -23,6 +24,7 @@ class DashboardScreen extends ConsumerWidget {
     final labBookingCount = labBookingsAsync.value?.where((b) => b.status.toUpperCase() == 'PENDING_CONFIRMATION').length.toString() ?? '0';
     
     final pendingApptCount = appointmentsAsync.value?.where((a) => a.status.toUpperCase() == 'PENDING_CONFIRMATION').length.toString() ?? '0';
+    final isLoading = doctorsAsync.isLoading || labBookingsAsync.isLoading || appointmentsAsync.isLoading;
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
@@ -57,42 +59,44 @@ class DashboardScreen extends ConsumerWidget {
               const SizedBox(height: 16),
               
               // Stats Grid
-              LayoutBuilder(
-                builder: (context, constraints) {
-                  final isWide = constraints.maxWidth > 600;
-                  return GridView.count(
-                    crossAxisCount: isWide ? 3 : 2,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                    childAspectRatio: isWide ? 3.0 : 1.4,
-                    children: [
-                      AdminStatCard(
-                        title: 'Active Doctors', 
-                        value: doctorCount, 
-                        icon: Icons.health_and_safety, 
-                        iconColor: AppTheme.primaryGreen,
-                        onTap: () => context.go('/doctors'),
-                      ),
-                      AdminStatCard(
-                        title: 'Pending Appointments', 
-                        value: pendingApptCount, 
-                        icon: Icons.calendar_today, 
-                        iconColor: AppTheme.primaryGreen,
-                        onTap: () => context.go('/appointments'),
-                      ),
-                      AdminStatCard(
-                        title: 'Pending Lab Bookings', 
-                        value: labBookingCount, 
-                        icon: Icons.science_outlined, 
-                        iconColor: AppTheme.accentGreen,
-                        onTap: () => context.go('/lab-bookings'),
-                      ),
-                    ],
-                  );
-                },
-              ),
+              isLoading 
+                ? const NeumorphicLoader(count: 3, isGrid: true)
+                : LayoutBuilder(
+                    builder: (context, constraints) {
+                      final isWide = constraints.maxWidth > 600;
+                      return GridView.count(
+                        crossAxisCount: isWide ? 3 : 2,
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        crossAxisSpacing: 16,
+                        mainAxisSpacing: 16,
+                        childAspectRatio: isWide ? 3.0 : 1.4,
+                        children: [
+                          AdminStatCard(
+                            title: 'Active Doctors', 
+                            value: doctorCount, 
+                            icon: Icons.health_and_safety, 
+                            iconColor: AppTheme.primaryGreen,
+                            onTap: () => context.go('/doctors'),
+                          ),
+                          AdminStatCard(
+                            title: 'Pending Appointments', 
+                            value: pendingApptCount, 
+                            icon: Icons.calendar_today, 
+                            iconColor: AppTheme.primaryGreen,
+                            onTap: () => context.go('/appointments'),
+                          ),
+                          AdminStatCard(
+                            title: 'Pending Lab Bookings', 
+                            value: labBookingCount, 
+                            icon: Icons.science_outlined, 
+                            iconColor: AppTheme.accentGreen,
+                            onTap: () => context.go('/lab-bookings'),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
               
               const SizedBox(height: 36),
               Row(
@@ -104,66 +108,68 @@ class DashboardScreen extends ConsumerWidget {
               const SizedBox(height: 12),
               
               // Activity List with premium styling
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: 2,
-                itemBuilder: (context, index) {
-                  String doctorSubtitle = 'Waiting for doctors to join';
-                  if (doctorsAsync.hasValue && doctorsAsync.value!.isNotEmpty) {
-                    final latestDoctor = doctorsAsync.value!.last;
-                    doctorSubtitle = 'Dr. ${latestDoctor.name} joined the platform';
-                  }
+              isLoading 
+                ? const NeumorphicLoader(count: 2)
+                : ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: 2,
+                    itemBuilder: (context, index) {
+                      String doctorSubtitle = 'Waiting for doctors to join';
+                      if (doctorsAsync.hasValue && doctorsAsync.value!.isNotEmpty) {
+                        final latestDoctor = doctorsAsync.value!.last;
+                        doctorSubtitle = 'Dr. ${latestDoctor.name} joined the platform';
+                      }
 
-                  String labSubtitle = 'Waiting for completed lab tests';
-                  if (labBookingsAsync.hasValue && labBookingsAsync.value!.isNotEmpty) {
-                    final completedBookings = labBookingsAsync.value!.where((b) => b.status.toUpperCase() == 'REPORT_READY').toList();
-                    if (completedBookings.isNotEmpty) {
-                      labSubtitle = 'A lab test report was recently finalized';
-                    }
-                  }
+                      String labSubtitle = 'Waiting for completed lab tests';
+                      if (labBookingsAsync.hasValue && labBookingsAsync.value!.isNotEmpty) {
+                        final completedBookings = labBookingsAsync.value!.where((b) => b.status.toUpperCase() == 'REPORT_READY').toList();
+                        if (completedBookings.isNotEmpty) {
+                          labSubtitle = 'A lab test report was recently finalized';
+                        }
+                      }
 
-                  final activities = [
-                    {'title': 'New Doctor Registered', 'subtitle': doctorSubtitle, 'icon': Icons.person_add, 'color': AppTheme.primaryGreen},
-                    {'title': 'Lab Test Completed', 'subtitle': labSubtitle, 'icon': Icons.check_circle, 'color': AppTheme.primaryGreen},
-                  ];
-                  final activity = activities[index];
-                  final Color iconColor = activity['color'] as Color;
-                  
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 16.0),
-                    child: NeumorphicCard(
-                      padding: 12,
-                      child: ListTile(
-                        leading: Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [iconColor.withValues(alpha: 0.2), iconColor.withValues(alpha: 0.05)],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
+                      final activities = [
+                        {'title': 'New Doctor Registered', 'subtitle': doctorSubtitle, 'icon': Icons.person_add, 'color': AppTheme.primaryGreen},
+                        {'title': 'Lab Test Completed', 'subtitle': labSubtitle, 'icon': Icons.check_circle, 'color': AppTheme.primaryGreen},
+                      ];
+                      final activity = activities[index];
+                      final Color iconColor = activity['color'] as Color;
+                      
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 16.0),
+                        child: NeumorphicCard(
+                          padding: 12,
+                          child: ListTile(
+                            leading: Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [iconColor.withValues(alpha: 0.2), iconColor.withValues(alpha: 0.05)],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                                shape: BoxShape.circle,
+                                border: Border.all(color: iconColor.withValues(alpha: 0.2), width: 1),
+                              ),
+                              child: Icon(activity['icon'] as IconData, color: iconColor),
                             ),
-                            shape: BoxShape.circle,
-                            border: Border.all(color: iconColor.withValues(alpha: 0.2), width: 1),
+                            title: Text(activity['title'] as String, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                            subtitle: Padding(
+                              padding: const EdgeInsets.only(top: 4.0),
+                              child: Text(activity['subtitle'] as String, style: TextStyle(color: AppTheme.textSecondary.withValues(alpha: 0.8), fontSize: 13)),
+                            ),
+                            trailing: const Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text('Just now', style: TextStyle(fontSize: 12, color: AppTheme.accentGreen, fontWeight: FontWeight.bold)),
+                              ],
+                            ),
                           ),
-                          child: Icon(activity['icon'] as IconData, color: iconColor),
                         ),
-                        title: Text(activity['title'] as String, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-                        subtitle: Padding(
-                          padding: const EdgeInsets.only(top: 4.0),
-                          child: Text(activity['subtitle'] as String, style: TextStyle(color: AppTheme.textSecondary.withValues(alpha: 0.8), fontSize: 13)),
-                        ),
-                        trailing: const Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text('Just now', style: TextStyle(fontSize: 12, color: AppTheme.accentGreen, fontWeight: FontWeight.bold)),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
+                      );
+                    },
+                  ),
             ],
           ),
         ),
