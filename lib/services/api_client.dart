@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
+import 'package:flutter/foundation.dart';
 
 class ApiClient {
   // Singleton instance
@@ -9,8 +10,10 @@ class ApiClient {
   
   ApiClient._internal();
 
-  // URLs (To be updated with real backend URLs)
-  static const String baseUrl = 'http://localhost:8000'; // Default fallback
+  // URLs
+  static const String baseUrl = kReleaseMode 
+      ? 'https://newappbackend.manjumedicalstores.com' 
+      : 'http://localhost:8000';
   static const String graphqlEndpoint = '$baseUrl/graphql';
   
   // Clients
