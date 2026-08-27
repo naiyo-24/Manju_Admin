@@ -10,6 +10,7 @@ It acts as the central administrative interface, integrating directly with the M
 - **Appointment Management**: Track and update patient appointments. Includes a seamless "Walk-in Guest" flow that automatically provisions a patient account if they aren't registered.
 - **Lab Test Catalog**: Manage the list of available laboratory tests and packages.
 - **Lab Bookings**: Process and track patient laboratory bookings, manage status updates (e.g. Agent Assigned), and upload finalised PDF Lab Reports securely.
+- **Dynamic Loading States**: Shimmer effect loading screens (`NeumorphicLoader`) for initial data fetches and button-level spinners (`CircularProgressIndicator`) for asynchronous mutations (creating, updating, deleting records).
 
 ## 📂 Project Structure
 
@@ -48,7 +49,8 @@ lib/
 ├── widgets/                    # Reusable, shared UI components
 │   ├── admin_stat_card.dart
 │   ├── custom_dropdown.dart
-│   └── neumorphic_card.dart
+│   ├── neumorphic_card.dart
+│   └── neumorphic_loader.dart  # Skeleton loading placeholders (Shimmer)
 └── screens/                    # Feature-based UI screens
     ├── auth/                   # Admin Login Flow
     ├── dashboard/              # Main Overview Dashboard
@@ -66,6 +68,7 @@ lib/
 - **Network Client**: `dio` (REST & GraphQL POST requests)
 - **Local Storage**: `shared_preferences` (Secure JWT Token storage)
 - **File Handling**: `file_picker` (Uploading Lab Reports & CSV Downloads)
+- **Animations & UX**: `shimmer` (Loading placeholders)
 
 ## 🔧 Getting Started
 
