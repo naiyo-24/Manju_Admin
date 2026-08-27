@@ -313,6 +313,13 @@ class _AddAppointmentDialogState extends ConsumerState<AddAppointmentDialog> {
                         return;
                       }
                       
+                      final isUuid = RegExp(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$').hasMatch(inputUserId);
+                      final isPhone = RegExp(r'^\d{10}$').hasMatch(inputUserId);
+                      if (!isUuid && !isPhone) {
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please enter a valid UUID or a 10-digit phone number.')));
+                        return;
+                      }
+                      
                       setState(() => _isLoading = true);
                       try {
                         final newAppt = Appointment(
