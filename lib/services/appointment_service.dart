@@ -51,6 +51,7 @@ class AppointmentService {
           'doctor_id': appointment.doctorId,
           'preferred_date': appointment.preferredDate.toIso8601String().split('T')[0],
           if (appointment.formDetails != null) 'form_details': appointment.formDetails,
+          'status': appointment.status,
         },
       );
       

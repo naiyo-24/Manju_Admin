@@ -54,6 +54,7 @@ class LabBookingService {
           'preferred_date': booking.preferredDate.toIso8601String().split('T')[0],
           if (booking.formDetails != null) 'form_details': booking.formDetails,
           'payment_method': booking.paymentMethod,
+          'status': booking.status,
         },
       );
       
